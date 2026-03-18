@@ -78,12 +78,12 @@ export const createOrder = async (
 ) => {
     try {
         const options = {
-            description: 'Kcart Order Payment',
+            description: 'eventGo Order Payment',
             image: 'https://your-logo-url.png', // Update with your actual logo URL
             currency: 'INR',
             key: key,
             amount: amount,
-            name: 'Kcart',
+            name: 'eventGo',
             order_id: order_id,
             theme: { color: '#009E60' }
         };

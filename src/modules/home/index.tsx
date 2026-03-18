@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Platform } from 'react-native'
+import { View, Text, StyleSheet, Platform, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../store/reduxHook'
 import { getHomeContent } from './api/action'
@@ -16,6 +16,22 @@ const Home = () => {
   const scrollYGlobal = useSharedValue(0)
   const [selectedTab, setSelectedTab] = useState(0)
 
+  // Evento Custom Search State
+  const [searchQuery, setSearchQuery] = useState('')
+  const [minPrice, setMinPrice] = useState(0)
+  const [maxPrice, setMaxPrice] = useState(0)
+  const [options, setOptions] = useState('')
+
+  const handleSearch = (q: string, minP: number, maxP: number, opt: string) => {
+    setSearchQuery(q)
+    setMinPrice(minP)
+    setMaxPrice(maxP)
+    setOptions(opt)
+
+    // TODO: Connect vector search / natural language inference API here
+    Alert.alert('Searching Evento', `Query: ${q}\nMin: ₹${minP} | Max: ₹${maxP}\nOptions: ${opt}`)
+  }
+
   const moveUpStyle = useAnimatedStyle(() => {
     const translateY = interpolate(scrollYGlobal.value, [0, 100], [0, -100], 'clamp')
     return {
@@ -26,14 +42,14 @@ const Home = () => {
 
 
   return (
-   <View style={styles.container}>
-      <View style={{ height: Platform.OS === 'android' ? insets.top : 0 }} />
+    <View style={styles.container}>
       <Animated.View style={[moveUpStyle, { height: screenHeight }]}>
         {/* Pass selectedTab and setSelectedTab */}
         <ProductDashboard
           scrollYGlobal={scrollYGlobal}
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
+          onSearch={handleSearch}
         />
       </Animated.View>
     </View>
@@ -43,7 +59,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    // backgroundColor: '#ff0303ff',
   },
 })
 

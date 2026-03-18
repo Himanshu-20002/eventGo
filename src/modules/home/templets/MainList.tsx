@@ -1,5 +1,5 @@
 import { View, Text, FlatList, NativeSyntheticEvent, NativeScrollEvent, RefreshControl, Platform, ActivityIndicator } from 'react-native'
-import React, { useState, useEffect,FC, useRef }  from 'react'
+import React, { useState, useEffect, FC, useRef } from 'react'
 import { dynamicDashboardData as fullData } from '@utils/db'
 import CustomText from '../../../utils/ui/ui'
 import { RFValue } from 'react-native-responsive-fontsize'
@@ -12,65 +12,65 @@ import VerticalList from '../organisms/VerticalList'
 import HorizontalList from '../organisms/HorizontalList'
 import AnimatedHorizontalList from '../organisms/AnimatedHorizontalList'
 
-const sectionComponents:{[key:string]:React.ComponentType<any>} = {
-  ad_carousal:AdCarousal,
-  categories:Categories,
-  sponser:Sponser,
+const sectionComponents: { [key: string]: React.ComponentType<any> } = {
+  ad_carousal: AdCarousal,
+  categories: Categories,
+  sponser: Sponser,
   // vertical_list:VerticalList,
-  horizontal_list:HorizontalList,
-  animated_horizontal_list:AnimatedHorizontalList
+  horizontal_list: HorizontalList,
+  // animated_horizontal_list: AnimatedHorizontalList
 }
 const PAGE_SIZE = 4
 
-const MainList:FC<{scrollYGlobal:any}> = ({scrollYGlobal}) => {
-  const [isRefreshing,setIsRefreshing] = useState(false)
-  const [data,setData] = useState(fullData.slice(0,PAGE_SIZE))
-  const [currentPage,setCurrentPage] = useState(1)
-  const [isLoading,setIsLoading] = useState(false)
-  const [isLoadingMore,setIsLoadingMore] = useState(false)
-  
+const MainList: FC<{ scrollYGlobal: any }> = ({ scrollYGlobal }) => {
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [data, setData] = useState(fullData.slice(0, PAGE_SIZE))
+  const [currentPage, setCurrentPage] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
 
-  const  prevScrolly=useRef(0)
+
+  const prevScrolly = useRef(0)
   const flatlistRef = useRef<FlatList>(null)
-  const handleScroll =(event:NativeSyntheticEvent<NativeScrollEvent>)=>{  
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentY = event.nativeEvent.contentOffset.y
     scrollYGlobal.value = currentY
     prevScrolly.current = currentY
 
   }
 
-  const handleRefresh = ()=>{
+  const handleRefresh = () => {
     setIsRefreshing(true)
-    setTimeout(()=>{
+    setTimeout(() => {
       setCurrentPage(1)
-      setData(fullData.slice(0,PAGE_SIZE))
+      setData(fullData.slice(0, PAGE_SIZE))
       setIsRefreshing(false)
-    },1000)
+    }, 1000)
   }
 
-  const handleLoadMore = ()=>{
-    if(isLoadingMore) return;
-    if(data?.length >= fullData.length) return;
+  const handleLoadMore = () => {
+    if (isLoadingMore) return;
+    if (data?.length >= fullData.length) return;
     setIsLoadingMore(true)
-    setTimeout(()=>{
+    setTimeout(() => {
       const newPage = currentPage + 1
-      const newItems = fullData.slice(0,newPage * PAGE_SIZE)
+      const newItems = fullData.slice(0, newPage * PAGE_SIZE)
       setData(newItems)
       setCurrentPage(newPage)
       setIsLoadingMore(false)
-    },1000)
+    }, 1000)
   }
 
-  const renderItem = ({item}:{item:any})=>{
+  const renderItem = ({ item }: { item: any }) => {
     const SectionComponent = sectionComponents[item.type]
     return SectionComponent ? <SectionComponent data={item} /> : null
-   
+
   }
 
 
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -82,18 +82,18 @@ const MainList:FC<{scrollYGlobal:any}> = ({scrollYGlobal}) => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={9}
         nestedScrollEnabled
-        contentContainerStyle={{paddingBottom:Platform.OS === 'android' ? 300 : 300}}
+        contentContainerStyle={{ paddingBottom: Platform.OS === 'android' ? 300 : 300 }}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item,index)=>index.toString()}
+        keyExtractor={(item, index) => index.toString()}
         ListFooterComponent={
           <>
-            {isLoadingMore && <ActivityIndicator style={{alignSelf:'center',margin:15}} size="small" color="#0000ff" />}
+            {isLoadingMore && <ActivityIndicator style={{ alignSelf: 'center', margin: 15 }} size="small" color="#0000ff" />}
             <View style={{ backgroundColor: '#F8F8F8', padding: 20 }}>
               <CustomText
                 fontSize={RFValue(32)}
                 fontFamily={Fonts.Bold}
                 style={{ opacity: 0.2 }}>
-                Your Midnight Thirst Buster.
+                eventGo
               </CustomText>
               <CustomText
                 fontFamily={Fonts.Bold}

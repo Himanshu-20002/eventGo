@@ -25,7 +25,8 @@ import { FONTS  as Fonts} from '@utils/Constants';
     withTiming
   } from 'react-native-reanimated';
   import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-  import StickySearchBar from './StickySeacrchBar'
+import StickySearchBar from './StickySeacrchBar'
+import EventSearchForm from '../molecules/EventSearchForm';
 import Visuals from '../molecules/Visuals';
 import FoodDashboard from './FoodDashboard';
 import ServiceDashboard from './ServiceDashboard';
@@ -35,7 +36,7 @@ import ServiceDashboard from './ServiceDashboard';
 //   //Initial State: The drawer is closed and hidden from view. This is like the notice being off-screen, represented by the initial value of NOTICE_HEIGHT.
 //   const NOTICE_HEIGHT = -(NoticeHeight + 12); //positions the notice off-screen (above the visible area). This means that when the component first renders, the notice is hidden.
   
-  const ProductDashboard = ({scrollYGlobal ,selectedTab,setSelectedTab}) => {
+  const ProductDashboard = ({scrollYGlobal, selectedTab, setSelectedTab, onSearch}: any) => {
     // const [selectedIndex, setSelectedIndex] = useState(0);
   
     const { scrollY, expand } = useCollapsibleContext()
@@ -93,11 +94,7 @@ import ServiceDashboard from './ServiceDashboard';
       <CollapsibleContainer style={styles.panelContainer}>
        <CollapsibleHeaderContainer containerStyle={styles.transparent}>
           <AnimatedHeader />
-          {/* Pass selectedTab and setSelectedTab */}
-          <StickySearchBar
-            selectedIndex={selectedTab}
-            setSelectedIndex={setSelectedTab}
-          />
+          <EventSearchForm onSearch={onSearch} />
         </CollapsibleHeaderContainer>
         <CollapsibleScrollView
           scrollEnabled={true}
@@ -117,7 +114,7 @@ import ServiceDashboard from './ServiceDashboard';
       backgroundColor: '#ffsdf'
     },
     transparent: {
-      backgroundColor: '#0672ffff',
+      backgroundColor: 'transparent',
     },
     visualsContainer: {
       position: 'absolute',

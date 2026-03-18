@@ -10,12 +10,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 const App = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <Provider store={store}>
-        <Navigation/>
-        <StatusBar backgroundColor='#0672ffff' barStyle='dark-content' translucent />
-    </Provider>
+      <Provider store={store}>
+        <Navigation />
+        {/* <StatusBar backgroundColor='transparent' barStyle='dark-content' translucent /> */}
+      </Provider>
     </GestureHandlerRootView>
-   
+
   )
 }
 

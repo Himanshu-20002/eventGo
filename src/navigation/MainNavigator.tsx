@@ -13,55 +13,48 @@ import { selectTotalItemsInCart } from '@modules/cart/api/slice';
 
 const Tab = createBottomTabNavigator();
 
-const MainNavigator:FC = () => {
-    const count =  useAppSelector(selectTotalItemsInCart)
+const MainNavigator: FC = () => {
+  const count = useAppSelector(selectTotalItemsInCart)
   return (
     <Tab.Navigator
-     screenOptions={{
-        headerShown:false,
-        tabBarHideOnKeyboard:true,
-        tabBarActiveTintColor:Colors.active,
-        tabBarInactiveTintColor:Colors.inactive,
-        lazy:true,
-        tabBarStyle:{
-            paddingTop:Platform.OS === "ios" ? 10 : 0,
-            // backgroundColor:'green',
-            borderTopWidth:0,
-            height:70,
-            paddingBottom:0,
-            marginBottom:0,
-            elevation:9,
+      screenOptions={{
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
+        tabBarActiveTintColor: Colors.active,
+        tabBarInactiveTintColor: Colors.inactive,
+        lazy: true,
+        tabBarStyle: {
+          paddingTop: Platform.OS === "ios" ? 10 : 0,
+          // backgroundColor:'green',
+          borderTopWidth: 0,
+          height: 70,
+          paddingBottom: 0,
+          marginBottom: 0,
+          elevation: 9,
         }
-        }}>
-      <Tab.Screen name="Home" component={Home} 
-      options={{
-        tabBarIcon:({focused,size,color}) => <HomeIcon focused={focused} size={size} color={color}  />
-      }}
-      />
-      {/* <Tab.Screen name="Categories" component={Categories} 
-      options={{
-        tabBarIcon:({focused,size,color}) => <CategoriesIcon focused={focused} size={size} color={color} />
-      }}
-      /> */}
-      {/* <Tab.Screen name="Account" component={Account} 
-      options={{
-          tabBarIcon:({focused,size,color}) => <AccountIcon focused={focused} size={size} color={color} />,
-          
+      }}>
+      <Tab.Screen name="Home" component={Home}
+        options={{
+          tabBarIcon: ({ focused, size, color }) => <HomeIcon focused={focused} size={size} color={color} />
         }}
-      /> */}
-        <Tab.Screen name="Cart" component={Cart} 
-          options={{
-           tabBarBackground:()=> <View style={{backgroundColor:'rgba(244, 244, 71, 0.27)',flex:1}} />,
-            tabBarIcon:({focused,size,color}) => <CartIcon focused={focused} size={size} color={color}  />,
-            tabBarBadge: count > 0 ? count : undefined,
-            tabBarBadgeStyle:{
-              backgroundColor:Colors.primary,
-              color:'#000',
-              fontSize:12,
-              fontWeight:'bold'
-            }
-          }}
-          />
+      />
+      <Tab.Screen name="Categories" component={Categories}
+        options={{
+          tabBarIcon: ({ focused, size, color }) => <CategoriesIcon focused={focused} size={size} color={color} />
+        }}
+      />
+      <Tab.Screen name="Account" component={Account}
+        options={{
+          tabBarIcon: ({ focused, size, color }) => <AccountIcon focused={focused} size={size} color={color} />,
+
+        }}
+      />
+      <Tab.Screen name="Booking" component={Cart}
+        options={{
+          tabBarIcon: ({ focused, size, color }) => <AccountIcon focused={focused} size={size} color={color} />,
+
+        }}
+      />
 
     </Tab.Navigator>
   )

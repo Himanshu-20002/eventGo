@@ -13,8 +13,8 @@ export const categoriesData = [
     { id: 1, name: "Organizer", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/121/121/image/18a00dd8cb47884d.jpg?q=60' },
     { id: 2, name: "Events", image_uri: 'https://res.cloudinary.com/da41fzsmk/image/upload/v1763997122/Screenshot_2025-11-24_203352_1_1_pgs5vi.png' },
     { id: 3, name: "PropRental", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/121/121/image/18a00dd8cb47884d.jpg?q=60' },
-   
-   
+
+
 ]
 
 export const dynamicDashboardData = [
@@ -31,7 +31,7 @@ export const dynamicDashboardData = [
         type: "categories",
         data: categoriesData,
     },
-  
+
     {
         type: "sponser",
         data: [{
@@ -40,7 +40,7 @@ export const dynamicDashboardData = [
             path: '/sponser1'
         }]
     },
-    
+
     {
         type: "horizontal_list",
         title: "Organizers",
@@ -65,11 +65,11 @@ export const dynamicDashboardData = [
         ]
     },
     {
-        type:"sponser",
-        data:[{
-            id:3,
-             image_uri: "https://res.cloudinary.com/da41fzsmk/image/upload/v1763995096/White_And_Black_Gradient_Coming_Soon_Email_Header_cxevsz.png",
-            path:'/sponser2'
+        type: "sponser",
+        data: [{
+            id: 3,
+            image_uri: "https://res.cloudinary.com/da41fzsmk/image/upload/v1763995096/White_And_Black_Gradient_Coming_Soon_Email_Header_cxevsz.png",
+            path: '/sponser2'
         }]
     },
     {
@@ -191,33 +191,33 @@ export const productData = [
 
 export const orderData = [
     {
-      id: "1",
-      deliveryDate: "2025-01-18",
-      items: [
-        {
-          name: "TShirt",
-          quantity: 2,
-          price: 512,
-          imageUri: "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70"
-        },
-        {
-          name: "Shocks",
-          quantity: 1,
-          price: 123,
-          imageUri: "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70"
-        }
-      ]
+        id: "1",
+        deliveryDate: "2025-01-18",
+        items: [
+            {
+                name: "TShirt",
+                quantity: 2,
+                price: 512,
+                imageUri: "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70"
+            },
+            {
+                name: "Shocks",
+                quantity: 1,
+                price: 123,
+                imageUri: "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70"
+            }
+        ]
     },
     {
-      id: "2",
-      deliveryDate: "2025-01-20",
-      items: [
-        {
-          name: "Mouse",
-          quantity: 3,
-          price: 345,
-          imageUri: "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70"
-        }
-      ]
+        id: "2",
+        deliveryDate: "2025-01-20",
+        items: [
+            {
+                name: "Mouse",
+                quantity: 3,
+                price: 345,
+                imageUri: "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70"
+            }
+        ]
     }
-  ];
+];

@@ -1,4 +1,4 @@
-package com.kcart
+package com.eventgo
 
 import android.app.Application
 import com.facebook.react.PackageList
