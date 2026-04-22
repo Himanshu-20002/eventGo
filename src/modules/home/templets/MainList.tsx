@@ -11,33 +11,39 @@ import Sponser from '../organisms/Sponser'
 import VerticalList from '../organisms/VerticalList'
 import HorizontalList from '../organisms/HorizontalList'
 import AnimatedHorizontalList from '../organisms/AnimatedHorizontalList'
+import AIAssistantSection from '../../../components/aiAssistant/AIAssistantSection'
+import Animated, { useAnimatedScrollHandler } from 'react-native-reanimated';
 
 const sectionComponents: { [key: string]: React.ComponentType<any> } = {
   ad_carousal: AdCarousal,
   categories: Categories,
   sponser: Sponser,
-  // vertical_list:VerticalList,
   horizontal_list: HorizontalList,
-  // animated_horizontal_list: AnimatedHorizontalList
+  "ai_assistant": AIAssistantSection
 }
+
 const PAGE_SIZE = 4
+
+const renderItem = ({ item }: { item: any }) => {
+  const SectionComponent = sectionComponents[item.type]
+  return SectionComponent ? <SectionComponent data={item} /> : null
+}
+
+const keyExtractor = (item: any, index: number) => item.id || index.toString()
 
 const MainList: FC<{ scrollYGlobal: any }> = ({ scrollYGlobal }) => {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [data, setData] = useState(fullData.slice(0, PAGE_SIZE))
   const [currentPage, setCurrentPage] = useState(1)
-  const [isLoading, setIsLoading] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
-
-  const prevScrolly = useRef(0)
   const flatlistRef = useRef<FlatList>(null)
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentY = event.nativeEvent.contentOffset.y
-    scrollYGlobal.value = currentY
-    prevScrolly.current = currentY
 
-  }
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollYGlobal.value = event.contentOffset.y;
+    },
+  });
 
   const handleRefresh = () => {
     setIsRefreshing(true)
@@ -49,8 +55,8 @@ const MainList: FC<{ scrollYGlobal: any }> = ({ scrollYGlobal }) => {
   }
 
   const handleLoadMore = () => {
-    if (isLoadingMore) return;
-    if (data?.length >= fullData.length) return;
+    if (isLoadingMore || data?.length >= fullData.length) return;
+
     setIsLoadingMore(true)
     setTimeout(() => {
       const newPage = currentPage + 1
@@ -61,30 +67,21 @@ const MainList: FC<{ scrollYGlobal: any }> = ({ scrollYGlobal }) => {
     }, 1000)
   }
 
-  const renderItem = ({ item }: { item: any }) => {
-    const SectionComponent = sectionComponents[item.type]
-    return SectionComponent ? <SectionComponent data={item} /> : null
-
-  }
-
-
-
   return (
     <View style={{ flex: 1 }}>
-      <FlatList
+      <Animated.FlatList
         data={data}
         renderItem={renderItem}
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
-        overScrollMode='always'
-        onScroll={handleScroll}
-        ref={flatlistRef}
-        scrollEventThrottle={99}
+        onScroll={scrollHandler}
+        ref={flatlistRef as any}
+        scrollEventThrottle={16}
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={9}
+        onEndReachedThreshold={0.5}
         nestedScrollEnabled
-        contentContainerStyle={{ paddingBottom: Platform.OS === 'android' ? 300 : 300 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={keyExtractor}
         ListFooterComponent={
           <>
             {isLoadingMore && <ActivityIndicator style={{ alignSelf: 'center', margin: 15 }} size="small" color="#0000ff" />}
@@ -108,7 +105,5 @@ const MainList: FC<{ scrollYGlobal: any }> = ({ scrollYGlobal }) => {
   )
 }
 
-export default MainList
+export default React.memo(MainList)
 
-
-//fullData → FlatList → renderItem → SectionComponent → Rendered UI

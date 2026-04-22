@@ -2,305 +2,344 @@ import React, { FC, useState } from 'react';
 import {
     View,
     TextInput,
-    TouchableOpacity,
     StyleSheet,
+    TouchableOpacity,
     Text,
+    ScrollView,
 } from 'react-native';
-import { FONTS } from '../../../utils/Constants';
-import CustomText from '../../../utils/ui/ui';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Slider from '@react-native-community/slider';
-import { StickyView, useCollapsibleContext } from '@r0b0t3d/react-native-collapsible';
-import Animated, { interpolate, useAnimatedStyle, Extrapolation } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import RollingContent from 'react-native-rolling-bar';
+import { useDispatch } from 'react-redux';
+import CustomText from '../../../utils/ui/ui';
+import { FONTS } from '../../../utils/Constants';
+import { submitAIQuery } from '../../../store/aiAssistant/slice';
 
-// Event-specific rolling suggestions tailored to Evento app
+interface EventSearchFormProps {
+    onSearch: (query: string, minPrice: number, maxPrice: number, options: string) => void;
+    isDark?: boolean;
+}
+
+const BUDGET_MAX = 100000;
+
 const eventSearchSuggestions = [
     '🎊 Wedding pastel theme under ₹50K...',
     '🎂 Birthday party indoor garden...',
     '💼 Corporate event premium setup...',
     '🎵 Music night outdoor stage decor...',
     '🌸 Floral ceremony classic white...',
-    '🎉 Anniversary candlelit surprise...',
 ];
 
-interface EventSearchFormProps {
-    onSearch: (query: string, minPrice: number, maxPrice: number, options: string) => void;
-}
-
-const BUDGET_MAX = 100000;
-
-const EventSearchForm: FC<EventSearchFormProps> = ({ onSearch }) => {
+const EventSearchForm: FC<EventSearchFormProps> = ({ onSearch, isDark }) => {
+    const dispatch = useDispatch();
     const [query, setQuery] = useState('');
     const [focused, setFocused] = useState(false);
-    const [budget, setBudget] = useState(20000);
+    const [budget, setBudget] = useState(25000);
     const [options, setOptions] = useState('');
 
-    const showRoller = !focused && query.length === 0;
-
-    const { scrollY } = useCollapsibleContext();
-
-    // Collapses the budget + options + button section on scroll
     const expandedStyle = useAnimatedStyle(() => {
-        const height = interpolate(scrollY.value, [0, 90], [155, 0], Extrapolation.CLAMP);
-        const opacity = interpolate(scrollY.value, [0, 55], [1, 0], Extrapolation.CLAMP);
-        const marginTop = interpolate(scrollY.value, [0, 90], [10, 0], Extrapolation.CLAMP);
-        return { height, opacity, marginTop, overflow: 'hidden' };
+        return {
+            height: withTiming(focused ? 150 : 0, { duration: 400 }),
+            opacity: withTiming(focused ? 1 : 0, { duration: 300 }),
+            marginTop: withTiming(focused ? 20 : 0, { duration: 400 }),
+        };
     });
 
-    const formatCurrency = (val: number) => {
-        if (val >= 100000) return '₹1L+';
-        if (val >= 1000) return `₹${(val / 1000).toFixed(1)}K`;
-        return `₹${val}`;
+    const handleSearchPress = () => {
+        onSearch(query, 0, budget, options);
+        if (query.trim()) {
+            dispatch(submitAIQuery(query));
+        }
+        setFocused(false);
     };
 
+    const textColor = isDark ? '#fff' : '#222';
+    const subTextColor = isDark ? '#aaa' : '#666'; // Darker placeholder
+    const inputBg = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+    const borderColor = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
+
+    const eventSearchSuggestions = [
+        '🎊 Wedding pastel theme under ₹50K...',
+        '🎂 Birthday party indoor garden...',
+        '💼 Corporate event premium setup...',
+        '🎵 Music night outdoor stage decor...',
+        '🌸 Floral ceremony classic white...',
+    ];
+
+    const popularTags = ['Indoor', 'Pastel', 'Royal', 'Outdoor', 'Minimal', 'Night', 'Floral'];
+
+    const toggleTag = (tag: string) => {
+        const parts = options.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        if (parts.includes(tag)) {
+            setOptions(parts.filter(p => p !== tag).join(', '));
+        } else {
+            setOptions([...parts, tag].join(', '));
+        }
+    };
+
+    const showRoller = query.length === 0 && !focused;
+
     return (
-        // StickyWrapper has the same blue as the CollapsibleHeader so it blends
-        // seamlessly - no more blue gap when stuck at top
-        <StickyView style={styles.stickyWrapper}>
-            <View style={styles.container}>
-                {/* Query Input — shows rolling suggestions when idle */}
-                <View style={styles.searchInputWrapper}>
-                    <Icon name="magnify" size={RFValue(17)} color="#0672ff" />
+        <View style={styles.container}>
+            {/* Artistic Search Input */}
+            <View style={[styles.searchInputWrapper, { backgroundColor: inputBg, borderColor }]}>
+                <Icon name="magnify" size={RFValue(18)} color="#0672ff" />
 
-                    {/* Rolling suggestion overlay — hidden when typing */}
-                    {showRoller ? (
-                        <RollingContent
-                            defaultStyle={false}
-                            customStyle={styles.rollingContainer}
-                            interval={2000}>
-                            {eventSearchSuggestions.map((item, index) => (
-                                <Text
-                                    key={index}
-                                    style={styles.rollingText}
-                                    onPress={() => setFocused(true)}>
-                                    {item}
-                                </Text>
-                            ))}
-                        </RollingContent>
-                    ) : (
-                        <TextInput
-                            style={styles.searchInput}
-                            placeholder="Describe your event..."
-                            placeholderTextColor="#aaa"
-                            value={query}
-                            onChangeText={setQuery}
-                            onFocus={() => setFocused(true)}
-                            onBlur={() => { if (query.length === 0) setFocused(false); }}
-                            autoFocus={focused}
-                        />
-                    )}
+                {showRoller ? (
+                    <TouchableOpacity
+                        style={{ flex: 1 }}
+                        activeOpacity={1}
+                        onPress={() => setFocused(true)}>
+                        <View pointerEvents="none">
+                            <RollingContent
+                                defaultStyle={false}
+                                customStyle={styles.rollingContainer}
+                                interval={2000}>
+                                {eventSearchSuggestions.map((item, index) => (
+                                    <Text
+                                        key={index}
+                                        style={[styles.rollingText, { color: subTextColor }]}>
+                                        {item}
+                                    </Text>
+                                ))}
+                            </RollingContent>
+                        </View>
+                    </TouchableOpacity>
+                ) : (
+                    <TextInput
+                        style={[styles.searchInput, { color: textColor }]}
+                        placeholder="Describe your artistic vision..."
+                        placeholderTextColor={subTextColor}
+                        value={query}
+                        onChangeText={setQuery}
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => { if (query.length === 0) setFocused(false); }}
+                        autoFocus={focused}
+                        onSubmitEditing={handleSearchPress}
+                    />
+                )}
 
-                    {/* Clear / collapse button */}
-                    {!showRoller && (
-                        <TouchableOpacity onPress={() => { setQuery(''); setFocused(false); }}>
-                            <Icon name="close-circle" size={RFValue(14)} color="#ccc" />
-                        </TouchableOpacity>
-                    )}
+                {!showRoller && query.length > 0 && (
+                    <TouchableOpacity onPress={() => { setQuery(''); setFocused(false); }}>
+                        <Icon name="close-circle" size={RFValue(16)} color={subTextColor} />
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            {/* Premium Controls */}
+            <Animated.View style={[expandedStyle, { overflow: 'hidden' }]}>
+                {/* Suggested Tags Area */}
+                <View style={styles.tagStrip}>
+                    <CustomText variant="h9" style={[styles.miniLabel, { color: subTextColor }]}>SUGGESTIONS</CustomText>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tagRow}>
+                        {popularTags.map((tag) => {
+                            const isSelected = options.split(',').map(s => s.trim()).includes(tag);
+                            return (
+                                <TouchableOpacity
+                                    key={tag}
+                                    style={[
+                                        styles.tagPill,
+                                        { backgroundColor: isSelected ? '#0672ff' : inputBg },
+                                        isSelected && styles.selectedShadow
+                                    ]}
+                                    onPress={() => toggleTag(tag)}
+                                >
+                                    <CustomText variant="h9" style={{ color: isSelected ? '#fff' : textColor }}>{tag}</CustomText>
+                                    <Icon
+                                        name={isSelected ? "check" : "plus"}
+                                        size={RFValue(10)}
+                                        color={isSelected ? "#fff" : "#0672ff"}
+                                    />
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </ScrollView>
                 </View>
 
-                {/* Collapsible: budget + options + button */}
-                <Animated.View style={expandedStyle}>
-                    {/* Budget Row */}
-                    <View style={styles.budgetBlock}>
-                        <View style={styles.budgetLabelRow}>
-                            <View style={styles.budgetLabelLeft}>
-                                <Icon name="currency-inr" size={RFValue(12)} color="#0672ff" />
-                                <CustomText style={styles.budgetLabel} fontFamily={FONTS.SemiBold} variant="h9">
-                                    Budget
-                                </CustomText>
-                            </View>
-                            <View style={styles.budgetBadge}>
-                                <CustomText style={styles.budgetBadgeText} fontFamily={FONTS.Bold} variant="h9">
-                                    {formatCurrency(budget)}
-                                </CustomText>
-                            </View>
+                <View style={[styles.budgetCard, { backgroundColor: inputBg }]}>
+                    <View style={styles.budgetHeader}>
+                        <View style={styles.labelGroup}>
+                            <Icon name="equalizer-outline" size={RFValue(14)} color="#0672ff" />
+                            <CustomText style={[styles.label, { color: subTextColor }]} fontFamily={FONTS.SemiBold}>
+                                ALLOCATION
+                            </CustomText>
                         </View>
-                        <View style={styles.sliderRangeRow}>
-                            <Text style={styles.sliderRangeText}>₹500</Text>
-                            <Text style={styles.sliderRangeText}>₹1L+</Text>
+                        <View style={styles.valueBadge}>
+                            <Text style={styles.badgeText}>₹{budget >= BUDGET_MAX ? '1L+' : (budget / 1000).toFixed(1) + 'K'}</Text>
                         </View>
-                        <Slider
-                            style={styles.slider}
-                            minimumValue={500}
-                            maximumValue={BUDGET_MAX}
-                            step={500}
-                            value={budget}
-                            onValueChange={setBudget}
-                            minimumTrackTintColor="#0672ff"
-                            maximumTrackTintColor="#e0e7ff"
-                            thumbTintColor="#0672ff"
+                    </View>
+
+                    <Slider
+                        style={styles.slider}
+                        minimumValue={500}
+                        maximumValue={BUDGET_MAX}
+                        step={500}
+                        onValueChange={setBudget}
+                        minimumTrackTintColor="#0672ff"
+                        maximumTrackTintColor={isDark ? 'rgba(255,255,255,0.1)' : '#eee'}
+                        thumbTintColor="#0672ff"
+                    />
+                </View>
+
+                <View style={styles.actionRow}>
+                    <View style={[styles.optionsBox, { backgroundColor: inputBg }]}>
+                        <Icon name="tag-outline" size={RFValue(14)} color="#0672ff" />
+                        <TextInput
+                            style={[styles.optionsInput, { color: textColor }]}
+                            placeholder="Tags..."
+                            placeholderTextColor={subTextColor}
+                            value={options}
+                            onChangeText={setOptions}
                         />
                     </View>
 
-                    {/* Options + Button */}
-                    <View style={styles.bottomRow}>
-                        <View style={styles.optionsWrapper}>
-                            <Icon name="tag-multiple-outline" size={RFValue(14)} color="#0672ff" />
-                            <TextInput
-                                style={styles.optionsInput}
-                                placeholder="Tags (Indoor, Pastel...)"
-                                placeholderTextColor="#bbb"
-                                value={options}
-                                onChangeText={setOptions}
-                            />
-                        </View>
-                        <TouchableOpacity
-                            style={styles.searchButton}
-                            activeOpacity={0.85}
-                            onPress={() => onSearch(query, 0, budget, options)}
-                        >
-                            <Icon name="creation" size={RFValue(14)} color="#fff" />
-                            <CustomText style={styles.searchButtonText} variant="h9" fontFamily={FONTS.Bold}>
-                                Search
-                            </CustomText>
-                        </TouchableOpacity>
-                    </View>
-                </Animated.View>
-            </View>
-        </StickyView>
+                    <TouchableOpacity style={styles.searchButton} onPress={handleSearchPress}>
+                        <Icon name="arrow-right-circle" size={RFValue(20)} color="#fff" />
+                    </TouchableOpacity>
+                </View>
+            </Animated.View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    // Outer StickyView wrapper - blue matches CollapsibleHeaderContainer
-    // so no gap is visible when the form sticks at top
-    stickyWrapper: {
-        backgroundColor: '#0672ff',
-        paddingHorizontal: 10,
-        paddingBottom: 10,
-    },
     container: {
-        backgroundColor: '#fff',
-        borderRadius: 18,
-        paddingHorizontal: 14,
-        paddingTop: 12,
-        paddingBottom: 10,
-        elevation: 4,
-        shadowColor: '#0055cc',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 5,
     },
     searchInputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f0f4ff',
-        borderRadius: 12,
-        paddingHorizontal: 12,
-        paddingVertical: 9,
-        marginBottom: 10,
-        gap: 8,
+        borderRadius: 18,
+        paddingHorizontal: 15,
+        paddingVertical: 12,
+        gap: 10,
+        borderWidth: 1,
     },
     searchInput: {
         flex: 1,
-        color: '#222',
         fontSize: RFValue(11),
         fontFamily: FONTS.Regular,
         padding: 0,
-        margin: 0,
     },
     rollingContainer: {
         flex: 1,
-        height: 24,
-        overflow: 'hidden',
         justifyContent: 'center',
     },
     rollingText: {
-        color: '#999',
         fontSize: RFValue(11),
         fontFamily: FONTS.Regular,
     },
-    budgetBlock: {
-        backgroundColor: '#f7f9ff',
-        borderRadius: 12,
-        paddingHorizontal: 10,
-        paddingTop: 8,
-        paddingBottom: 2,
+    budgetCard: {
+        borderRadius: 18,
+        padding: 12,
         marginBottom: 10,
     },
-    budgetLabelRow: {
+    budgetHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginBottom: 5,
     },
-    budgetLabelLeft: {
+    labelGroup: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 5,
+        gap: 6,
     },
-    budgetLabel: {
-        color: '#444',
-        fontSize: RFValue(10),
+    label: {
+        fontSize: RFValue(8),
+        letterSpacing: 1,
     },
-    budgetBadge: {
+    valueBadge: {
         backgroundColor: '#0672ff',
-        borderRadius: 20,
         paddingHorizontal: 10,
         paddingVertical: 2,
+        borderRadius: 8,
     },
-    budgetBadgeText: {
+    badgeText: {
         color: '#fff',
         fontSize: RFValue(9),
-    },
-    sliderRangeRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 2,
-        marginTop: 2,
-    },
-    sliderRangeText: {
-        fontSize: RFValue(8),
-        color: '#aaa',
-        fontFamily: FONTS.Regular,
+        fontFamily: FONTS.Bold,
     },
     slider: {
         width: '100%',
-        height: 28,
-        marginTop: -4,
+        height: 30,
     },
-    bottomRow: {
+    actionRow: {
         flexDirection: 'row',
+        gap: 10,
         alignItems: 'center',
-        gap: 8,
     },
-    optionsWrapper: {
+    optionsBox: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f0f4ff',
-        borderRadius: 12,
-        paddingHorizontal: 10,
-        paddingVertical: 9,
-        gap: 6,
+        borderRadius: 15,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        gap: 8,
+        borderWidth: 1,
+        borderColor: 'rgba(6, 114, 255, 0.15)',
     },
     optionsInput: {
         flex: 1,
-        color: '#222',
         fontSize: RFValue(10),
         fontFamily: FONTS.Regular,
         padding: 0,
-        margin: 0,
     },
     searchButton: {
+        backgroundColor: '#0672ff',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        gap: 5,
-        backgroundColor: '#0672ff',
-        borderRadius: 12,
-        paddingHorizontal: 14,
-        height: 40,
-        elevation: 3,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 15,
+        gap: 6,
+        elevation: 4,
         shadowColor: '#0672ff',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.35,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 6,
     },
-    searchButtonText: {
+    btnText: {
         color: '#fff',
         fontSize: RFValue(10),
+    },
+    tagStrip: {
+        marginBottom: 15,
+        paddingHorizontal: 2,
+    },
+    miniLabel: {
+        fontSize: RFValue(7),
+        letterSpacing: 1.5,
+        marginBottom: 8,
+        marginLeft: 4,
+        opacity: 0.6,
+    },
+    tagRow: {
+        gap: 8,
+        paddingBottom: 4,
+    },
+    tagPill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 12,
+        gap: 5,
+        borderWidth: 1,
+        borderColor: 'rgba(6, 114, 255, 0.1)',
+    },
+    selectedShadow: {
+        shadowColor: '#0672ff',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
+        borderColor: '#0672ff',
     },
 });
 

@@ -91,14 +91,14 @@ const Header: FC = () => {
     <View style={[styles.subContainer, { paddingTop: Platform.OS === 'android' ? insets.top + 15 : 10 }]}>
       <View style={styles.leftSection}>
         <View style={styles.brandRow}>
-          <TouchableOpacity style={styles.noticeBadge}>
+          {/* <TouchableOpacity style={styles.noticeBadge}>
             <CustomText
               fontSize={RFValue(9)}
               fontFamily={FONTS.Bold}
               style={styles.noticeText}>
               🌈 Rain
             </CustomText>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <CustomText
             fontFamily={FONTS.Bold}
             variant="h3"
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 14,
-    backgroundColor: '#0672ff',
+    backgroundColor: '#000000d6',
   },
   leftSection: {
     flex: 1, // Let this grow and push the profile to the right edge

@@ -1,188 +1,192 @@
 import {
-    Animated as RNAnimated,
-    SafeAreaView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
-  } from 'react-native';
-  import React, { useEffect, useRef, useState } from 'react';
-  import MainList from '../templets/MainList'
-  import {
-    CollapsibleContainer,
-    CollapsibleHeaderContainer,
-    CollapsibleScrollView,
-    useCollapsibleContext,
-    withCollapsibleContext,
-  } from '@r0b0t3d/react-native-collapsible';
-  import AnimatedHeader from './AnimatedHeader';
-  import SearchBar from '../molecules/SearchBar'
-//   import ContentContainer from '@components/dashboard/ContentContainer';
-  import CustomText from '../../../utils/ui/ui';
-  import { RFValue } from 'react-native-responsive-fontsize';
-import { FONTS  as Fonts} from '@utils/Constants';
-  import Animated, {
-    useAnimatedStyle,
-    withTiming
-  } from 'react-native-reanimated';
-  import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import StickySearchBar from './StickySeacrchBar'
-import EventSearchForm from '../molecules/EventSearchForm';
-import Visuals from '../molecules/Visuals';
+  Platform,
+  Animated as RNAnimated,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import {
+  CollapsibleContainer,
+  CollapsibleHeaderContainer,
+  CollapsibleScrollView,
+  CollapsibleFlatList,
+  useCollapsibleContext,
+  withCollapsibleContext,
+} from '@r0b0t3d/react-native-collapsible';
+import AnimatedHeader from './AnimatedHeader';
+import SearchBar from '../molecules/SearchBar'
+import DynamicWavyHeader from '../molecules/DynamicWavyHeader'
+import CustomText from '../../../utils/ui/ui';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { FONTS as Fonts } from '@utils/Constants';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FoodDashboard from './FoodDashboard';
 import ServiceDashboard from './ServiceDashboard';
+import { dynamicDashboardData as fullData } from '@utils/db'
+import AdCarousal from '../organisms/AdCarousal'
+import Categories from '../organisms/Categories'
+import Sponser from '../organisms/Sponser'
+import HorizontalList from '../organisms/HorizontalList'
+import AIAssistantSection from '../../../components/aiAssistant/AIAssistantSection'
 
-//   import withCart from '../cart/WithCart';
-//   import withLiveStatus from '../map/withLiveStatus';
-//   //Initial State: The drawer is closed and hidden from view. This is like the notice being off-screen, represented by the initial value of NOTICE_HEIGHT.
-//   const NOTICE_HEIGHT = -(NoticeHeight + 12); //positions the notice off-screen (above the visible area). This means that when the component first renders, the notice is hidden.
-  
-  const ProductDashboard = ({scrollYGlobal, selectedTab, setSelectedTab, onSearch}: any) => {
-    // const [selectedIndex, setSelectedIndex] = useState(0);
-  
-    const { scrollY, expand } = useCollapsibleContext()
-    const previousScrollY = useRef<number>(0)
-    const backtoTopStyle = useAnimatedStyle(() => {
-      const isScrollingUp = scrollY.value < previousScrollY.current && scrollY.value > 180
-      const opacity = withTiming(isScrollingUp ? 1 : 0, { duration: 300 })
-      const translateY = withTiming(isScrollingUp ? 0 : 10, { duration: 300 })
-  
-  
-      previousScrollY.current = scrollY.value
-      return {
-        opacity,
-        transform: [{ translateY }]
-      }
-    })
-    // `noticePosition` is a reference to an animated value created using `useRef` from React. It is initialized with a new instance of `RNAnimated.Value`, which is used to control the vertical position of a notice element in the UI.
-    // const noticePosition = useRef(new RNAnimated.Value(NOTICE_HEIGHT)).current;
-    //noticePosition is a instance of RNAnimated.Value that is used to control the vertical position of a notice element in the UI.
-  
-    // `noticePosition` is an animated value that controls the vertical position of a notice (like a notification or alert) on the screen. It is initialized to a value that positions the notice off-screen (above the visible area).
+const sectionComponents: { [key: string]: React.ComponentType<any> } = {
+  ad_carousal: AdCarousal,
+  categories: Categories,
+  sponser: Sponser,
+  horizontal_list: HorizontalList,
+  "ai_assistant": AIAssistantSection
+}
 
-  
-    const renderDashboard = () => {
-    switch (selectedTab) {
-      case 0:
-        return <MainList scrollYGlobal={scrollYGlobal} /> // Home
-      case 1:
-        return <FoodDashboard /> // Food
-      case 2:
-        return <ServiceDashboard /> // Service
-      default:
-        return <MainList scrollYGlobal={scrollYGlobal} />
+const keyExtractor = (item: any, index: number) => item.id || index.toString()
+
+const DynamicWavyHeaderMemo = React.memo(DynamicWavyHeader);
+
+const ProductDashboard = ({ scrollYGlobal, selectedTab, setSelectedTab, onSearch }: any) => {
+  const { scrollY, expand } = useCollapsibleContext()
+  const previousScrollY = useSharedValue(0)
+
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [data, setData] = useState(fullData.slice(0, 6))
+  const [currentPage, setCurrentPage] = useState(1)
+  const PAGE_SIZE = 6
+
+  // Dynamic Header State
+  const [headerTitle, setHeaderTitle] = useState('Event Collection')
+  const [headerTheme, setHeaderTheme] = useState<'light' | 'dark'>('light')
+
+  const handleCategorySelect = useCallback((categoryName: string) => {
+    setHeaderTitle(`${categoryName} Collection`)
+    // Switch theme based on category for visual dynamics
+    if (categoryName === 'Organizer' || categoryName === 'Stall') {
+      setHeaderTheme('dark')
+    } else {
+      setHeaderTheme('light')
     }
+  }, []);
+
+  const renderItem = useCallback(({ item }: { item: any }) => {
+    const SectionComponent = sectionComponents[item.type]
+    if (item.type === 'categories') {
+      return <SectionComponent data={item} onSelect={handleCategorySelect} />
+    }
+    return SectionComponent ? <SectionComponent data={item} /> : null
+  }, [handleCategorySelect]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true)
+    setTimeout(() => {
+      setCurrentPage(1)
+      setData(fullData.slice(0, PAGE_SIZE))
+      setIsRefreshing(false)
+    }, 1000)
   }
-  
-  
-    return (
-    
-  
-        <>
-      <SafeAreaView />
+
+  const handleLoadMore = () => {
+    if (data?.length >= fullData.length) return;
+    const newPage = currentPage + 1
+    const newItems = fullData.slice(0, newPage * PAGE_SIZE)
+    setData(newItems)
+    setCurrentPage(newPage)
+  }
+
+  const backtoTopStyle = useAnimatedStyle(() => {
+    const isScrollingUp = scrollY.value < previousScrollY.value && scrollY.value > 180
+    const opacity = withTiming(isScrollingUp ? 1 : 0, { duration: 300 })
+    const translateY = withTiming(isScrollingUp ? 0 : 10, { duration: 300 })
+
+    previousScrollY.value = scrollY.value
+    return {
+      opacity,
+      transform: [{ translateY }]
+    }
+  })
+
+  return (
+    <>
       <Animated.View style={[styles.backToTop, backtoTopStyle]}>
         <TouchableOpacity
           onPress={() => {
             scrollY.value = 0
             expand()
           }}
-          style={{ flexDirection: 'row', alignItems: 'center', gap:6, zIndex: 999 ,}}>
+          style={styles.backToTopButton}>
           <Icon name="arrow-up-circle" size={RFValue(12)} color="white" />
           <CustomText variant="h9" fontFamily={Fonts.SemiBold} style={{ color: 'white' }}>Back to top</CustomText>
         </TouchableOpacity>
-       
       </Animated.View>
+
       <CollapsibleContainer style={styles.panelContainer}>
-       <CollapsibleHeaderContainer containerStyle={styles.transparent}>
-          <AnimatedHeader />
-          <EventSearchForm onSearch={onSearch} />
+        <CollapsibleHeaderContainer containerStyle={styles.transparent}>
+          <DynamicWavyHeaderMemo
+            theme={headerTheme}
+            title={headerTitle}
+          />
         </CollapsibleHeaderContainer>
-        <CollapsibleScrollView
-          scrollEnabled={true}
-          style={styles.panelContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          {renderDashboard()}
-        </CollapsibleScrollView>
-          </CollapsibleContainer>
-        </>
-     
-    );
-  };
-  const styles = StyleSheet.create({
-    panelContainer: {
-      flex: 1,
-      backgroundColor: '#ffsdf'
-    },
-    transparent: {
-      backgroundColor: 'transparent',
-    },
-    visualsContainer: {
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
-      top: 0,
-      left: 0,
-      backgroundColor: '#000',
-      padding: 10,
-      alignSelf: "center",
-      zIndex: -1
-    },
-    backToTop: {
-      position: 'absolute',
-      bottom: 20,
-      right: 20,
-      backgroundColor: '#000',
-      padding: 10,
-      borderRadius: 100
-      , alignSelf: "center",
-      gap: 4,
-      zIndex: 999,
-    }
-  });
-  export default withCollapsibleContext(ProductDashboard);
-  //By wrapping ProductDashboard with withCollapsibleContext, you enable it to access the collapsible context, which can be useful for managing UI elements that depend on the scroll position or other collapsible states. This allows for a more dynamic and responsive user interface.
-  
-  //The primary purpose of withCollapsibleContext is to provide the wrapped component (in this case, ProductDashboard) with access to the collapsible context. This context includes shared state and methods related to the collapsible behavior, such as the current scroll position.
-  
-  
-  
-  // ProductDashboard
-  // ├── Imports
-  // │   ├── React and React Native Components
-  // │   ├── Custom Components (NoticeAnimation, Visuals, etc.)
-  // │   ├── Utility Functions and Constants
-  // │   ├── Higher-Order Components (withCart, withLiveStatus, etc.)
-  // │   ├── Animation Libraries (react-native-reanimated, etc.)
-  // ├── Constants
-  // │   └── NOTICE_HEIGHT
-  // ├── Hooks
-  // │   ├── useCollapsibleContext
-  // │   ├── useRef
-  // │   ├── useEffect
-  // │   └── useAnimatedStyle
-  // ├── Animated Values
-  // │   └── noticePosition
-  // ├── Functions
-  // │   ├── slideUp
-  // │   └── slideDown
-  // ├── Effects
-  // │   └── useEffect for notice animation
-  // ├── Render
-  // │   ├── NoticeAnimation
-  // │   ├── Visuals
-  // │   ├── SafeAreaView
-  // │   ├── Animated.View (Back to Top Button)
-  // │   │   └── TouchableOpacity (Back to Top Action)
-  // │   ├── CollapsibleContainer
-  // │   │   ├── CollapsibleHeaderContainer
-  // │   │   │   ├── AnimatedHeader
-  // │   │   │   └── StickySearchBar
-  // │   │   └── CollapsibleScrollView
-  // │   │       ├── ContentContainer
-  // │   │       └── View (Footer Text)
-  // ├── Styles
-  // │   ├── panelContainer
-  // │   ├── transparent
-  // │   └── backToTop
-  // └── Export
-  //     └── withLiveStatus(withCart(withCollapsibleContext(ProductDashboard)))
+
+        {selectedTab === 0 ? (
+          <CollapsibleFlatList
+            data={data}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            nestedScrollEnabled
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 100 }}
+            initialNumToRender={5}
+            maxToRenderPerBatch={5}
+            windowSize={10}
+            removeClippedSubviews={Platform.OS === 'android'}
+          />
+        ) : (
+          <CollapsibleScrollView
+            scrollEnabled={true}
+            style={styles.panelContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {selectedTab === 1 ? <FoodDashboard /> : <ServiceDashboard />}
+          </CollapsibleScrollView>
+        )}
+      </CollapsibleContainer>
+    </>
+  );
+};
+
+
+const styles = StyleSheet.create({
+  panelContainer: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
+  transparent: {
+    backgroundColor: 'transparent',
+  },
+  backToTop: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#000',
+    padding: 10,
+    borderRadius: 100,
+    alignSelf: "center",
+    zIndex: 999,
+  },
+  backToTopButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    zIndex: 999,
+  }
+});
+
+export default withCollapsibleContext(ProductDashboard);

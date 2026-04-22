@@ -10,27 +10,29 @@ export const slipData = ['PREMIUM FINDS', "100% GENUINE BRAND", "FREE SHIPPING",
 export const searchItems: string[] = ['Watches', 'Laptops', 'T-shirts', 'Shoes', 'Bags', 'Headphones', 'Sunglasses']
 
 export const categoriesData = [
-    { id: 1, name: "Organizer", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/121/121/image/18a00dd8cb47884d.jpg?q=60' },
-    { id: 2, name: "Events", image_uri: 'https://res.cloudinary.com/da41fzsmk/image/upload/v1763997122/Screenshot_2025-11-24_203352_1_1_pgs5vi.png' },
+    { id: 1, name: "Events", image_uri: 'https://res.cloudinary.com/da41fzsmk/image/upload/v1763997122/Screenshot_2025-11-24_203352_1_1_pgs5vi.png' },
+    { id: 2, name: "Organizer", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/121/121/image/18a00dd8cb47884d.jpg?q=60' },
     { id: 3, name: "PropRental", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/121/121/image/18a00dd8cb47884d.jpg?q=60' },
+    { id: 4, name: "Stall", image_uri: 'https://res.cloudinary.com/dniebxelj/image/upload/v1774386044/Gemini_Generated_Image_t4wua4t4wua4t4wu_m3y6xx.png' },
 
 
 ]
 
 export const dynamicDashboardData = [
-    {
-        type: "ad_carousal",
-        data: [
-            { id: 1, image_uri: require('@assets/images/banner1.png'), path: "/ad1" },
-            { id: 2, image_uri: require('@assets/images/banner2.png'), path: "/ad2" },
-            { id: 3, image_uri: require('@assets/images/banner3.png'), path: "/ad2" },
-            { id: 4, image_uri: require('@assets/images/banner5.png'), path: "/ad2" },
-        ],
-    },
+
     {
         type: "categories",
         data: categoriesData,
     },
+    // {
+    //     type: "ad_carousal",
+    //     data: [
+    //         { id: 1, image_uri: require('@assets/images/banner1.png'), path: "/ad1" },
+    //         { id: 2, image_uri: require('@assets/images/banner2.png'), path: "/ad2" },
+    //         { id: 3, image_uri: require('@assets/images/banner3.png'), path: "/ad2" },
+    //         { id: 4, image_uri: require('@assets/images/banner5.png'), path: "/ad2" },
+    //     ],
+    // },
 
     {
         type: "sponser",

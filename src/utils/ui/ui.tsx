@@ -1,21 +1,21 @@
-import {Colors, Fonts} from '../../utils/Constants';
-import {StyleSheet, Text, TextStyle} from 'react-native';
-import {RFValue} from 'react-native-responsive-fontsize';
+import { Colors, FONTS } from '../../utils/Constants';
+import { StyleSheet, Text, TextStyle } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
 import React from 'react';
 
 interface Props {
   variant?:
-    | 'h1'
-    | 'h2'
-    | 'h3'
-    | 'h4'
-    | 'h5'
-    | 'h6'
-    | 'h7'
-    | 'h8'
-    | 'h9'
-    | 'body';
-  fontFamily?: Fonts;
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'h6'
+  | 'h7'
+  | 'h8'
+  | 'h9'
+  | 'body';
+  fontFamily?: FONTS;
   fontSize?: number;
   style?: TextStyle | TextStyle[];
   children: React.ReactNode;
@@ -25,7 +25,7 @@ interface Props {
 
 const CustomText: React.FC<Props> = ({
   variant = 'body',
-  fontFamily = Fonts.Regular,
+  fontFamily = FONTS.Regular,
   fontSize,
   style,
   children,

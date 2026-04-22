@@ -1,121 +1,74 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
+import React from 'react'
 import RollingContent from 'react-native-rolling-bar'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Colors } from 'react-native/Libraries/NewAppScreen'
 import { RFValue } from 'react-native-responsive-fontsize'
-import { Pressable } from 'react-native'
-import { Image } from 'react-native'
-import Icon from '../../../component/atoms/Icon'
-import { searchItems } from '@utils/db'
+import Icon from 'react-native-vector-icons/Ionicons'
+import { useNavigation } from '@react-navigation/native'
+import { FONTS } from '../../../utils/Constants'
 
-
-
-
+const eventSearchSuggestions = [
+  ' Search Event , Organizer',
+  '🎂 Birthday party indoor garden...',
+  '💼 Corporate event premium setup...',
+  '🎵 Music night outdoor stage decor...',
+  '🌸 Floral ceremony classic white...',
+  '🎉 Anniversary candlelit surprise...',
+];
 
 const SearchBar = () => {
-
-  const [isOn, setIsOn] = useState(false)
-
-  const toggleSwitch = () => {
-    setIsOn(!isOn)
-  }
+  const navigation = useNavigation<any>();
 
   return (
-    <>
-      <SafeAreaView />
-      <View style={styles.container}>
-           
-   
-        <Pressable style={styles.searchContainer}>
-          <Icon name='search' size={20} color='#000' iconFamily='Ionicons' />
-          <RollingContent
-            defaultStyle={false}
-            customStyle={styles.rollingContainer}
-            interval={1000}>
-            {searchItems.map((item, index) => (
-              <Text key={index} style={styles.brandText}>{item}</Text>
-            ))}
-          </RollingContent>
-        </Pressable>
-      </View>
-    </>
+    <View style={styles.container}>
+      <Pressable
+        style={styles.searchContainer}
+        onPress={() => navigation.navigate('AISearchScreen')}
+      >
+        <Icon name='search' size={RFValue(16)} color='#0672ff' />
+        <RollingContent
+          defaultStyle={false}
+          customStyle={styles.rollingContainer}
+          interval={2500}>
+          {eventSearchSuggestions.map((item, index) => (
+            <Text key={index} style={styles.brandText}>{item}</Text>
+          ))}
+        </RollingContent>
+      </Pressable>
+    </View>
   )
 }
 
-
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 6,
-    marginTop: 4,
-
-
-  },
-  toggleContainer: {
-    width: '16%',
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-
-  brandText: {
-    fontSize: RFValue(8),
-    fontWeight: '700',
-    color: Colors.text,
-
-  },
-  swithchIcons: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 10,
-    marginLeft: 10
+    backgroundColor: '#0672ff',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    paddingTop: 10,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '97%',
-    backgroundColor: '#fafafa',
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    borderColor: '#ccc',
-    borderWidth: 2,
-    borderRadius: 9,
-    marginTop:9,
-    marginLeft:5
+    backgroundColor: '#fff',
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  brandText: {
+    fontSize: RFValue(11),
+    color: '#999',
+    fontFamily: FONTS.Regular,
   },
   rollingContainer: {
-    width: '80%',
-    height: 22,
-    color: Colors.text,
-    marginLeft: 10
+    flex: 1,
+    height: RFValue(16),
+    justifyContent: 'center',
+    marginLeft: 10,
   },
-  addressContainer:{
-    flexDirection:'row',
-    alignItems:'flex-start',
-    // justifyContent:'center',
-    // backgroundColor:'red',
-    marginLeft:10,
-    // marginTop:5,
-   
-  },
-  addressText:{
-    flex:1,
-    color:Colors.text,
-    marginLeft:5,
-    paddingHorizontal:5,
-   
-    fontSize:RFValue(9),
-  },
-  homeText:{
-    marginHorizontal:5,
-    fontSize:RFValue(11),
-    fontWeight:'bold',
-    marginLeft:10
-  }
-  
 })
 
 export default SearchBar

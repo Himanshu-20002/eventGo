@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 0,
     width: '100%',
-  height: screenWidth * 0.5,
+    height: screenWidth * 0.5,
   },
   image: {
     width: screenWidth,

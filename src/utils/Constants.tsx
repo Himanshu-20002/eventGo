@@ -11,6 +11,7 @@ export enum FONTS {
   Light = 'Okra-MediumLight',
   SemiBold = 'Okra-Bold',
   Bold = 'Okra-ExtraBold',
+  ExtraBold = 'Okra-ExtraBold',
 }
 
 export enum Colors {
