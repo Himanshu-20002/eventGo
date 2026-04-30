@@ -1,12 +1,10 @@
-import React, { FC, useState, useRef, useEffect } from 'react';
+import React, { FC, useRef, useEffect } from 'react';
 import {
     View,
     StyleSheet,
     TouchableOpacity,
-    TextInput,
     ScrollView,
     Image,
-    Linking,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,19 +20,10 @@ interface AIAssistantSectionProps {
 
 const AIAssistantSection: FC<AIAssistantSectionProps> = ({ isDark }) => {
     const dispatch = useDispatch();
-    const { history, loading, recommendedProps, externalSuggestions } = useSelector(
+    const { history, loading, recommendedProps } = useSelector(
         (state: RootState) => state.aiAssistant
     );
-    const [localQuery, setLocalQuery] = useState('');
-    const [showExternal, setShowExternal] = useState(false);
     const scrollRef = useRef<ScrollView>(null);
-
-    const handleSend = () => {
-        if (localQuery.trim()) {
-            dispatch(submitAIQuery(localQuery));
-            setLocalQuery('');
-        }
-    };
 
     const handleClear = () => {
         dispatch(clearHistory());
@@ -54,7 +43,12 @@ const AIAssistantSection: FC<AIAssistantSectionProps> = ({ isDark }) => {
     const inputBg = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)';
 
     return (
-        <View style={styles.container}>
+        <ScrollView
+            ref={scrollRef}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.container}
+            onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
+        >
             {/* Artistic Header */}
             <View style={styles.header}>
                 <View style={styles.headerInfo}>
@@ -90,63 +84,7 @@ const AIAssistantSection: FC<AIAssistantSectionProps> = ({ isDark }) => {
                     </View>
                 )}
             </View>
-
-            {/* Premium Recommendations */}
-            {recommendedProps.length > 0 && (
-                <View style={styles.recomBlock}>
-                    <CustomText variant="h9" fontFamily={FONTS.Bold} style={[styles.sectionTitle, { color: subTextColor }]}>
-                        CURATED SELECTIONS
-                    </CustomText>
-
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recomRow}>
-                        {row1.map((item, index) => (
-                            <View key={item.id || index} style={[styles.propCard, { backgroundColor: inputBg, borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
-                                <Image source={{ uri: item.image }} style={styles.propImage} />
-                                <View style={styles.propInfo}>
-                                    <CustomText variant="h9" fontFamily={FONTS.Bold} numberOfLines={1} style={{ color: textColor }}>
-                                        {item.name}
-                                    </CustomText>
-                                    <CustomText variant="h9" style={styles.priceText}>
-                                        ₹{item.price.toLocaleString()}
-                                    </CustomText>
-                                </View>
-                            </View>
-                        ))}
-                    </ScrollView>
-
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recomRow}>
-                        {row2.map((item, index) => (
-                            <View key={item.id || index} style={[styles.propCard, { backgroundColor: inputBg, borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
-                                <Image source={{ uri: item.image }} style={styles.propImage} />
-                                <View style={styles.propInfo}>
-                                    <CustomText variant="h9" fontFamily={FONTS.Bold} numberOfLines={1} style={{ color: textColor }}>
-                                        {item.name}
-                                    </CustomText>
-                                    <CustomText variant="h9" style={styles.priceText}>
-                                        ₹{item.price.toLocaleString()}
-                                    </CustomText>
-                                </View>
-                            </View>
-                        ))}
-                    </ScrollView>
-                </View>
-            )}
-
-            {/* Smart Input */}
-            <View style={[styles.inputContainer, { backgroundColor: inputBg }]}>
-                <TextInput
-                    style={[styles.input, { color: textColor }]}
-                    placeholder="Refine search..."
-                    placeholderTextColor={subTextColor}
-                    value={localQuery}
-                    onChangeText={setLocalQuery}
-                    onSubmitEditing={handleSend}
-                />
-                <TouchableOpacity style={styles.sendBtn} onPress={handleSend}>
-                    <Icon name="arrow-up-circle" size={RFValue(28)} color={localQuery.trim() ? '#0672ff' : subTextColor} />
-                </TouchableOpacity>
-            </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -203,53 +141,10 @@ const styles = StyleSheet.create({
     loadingBubble: {
         paddingVertical: 8,
     },
-    recomBlock: {
-        marginBottom: 20,
-    },
-    sectionTitle: {
-        fontSize: RFValue(7),
-        letterSpacing: 1.5,
-        marginBottom: 10,
-        marginLeft: 5,
-    },
-    recomRow: {
-        marginBottom: 10,
-    },
-    propCard: {
-        width: 130,
-        borderRadius: 20,
-        marginRight: 12,
-        overflow: 'hidden',
-        borderWidth: 1,
-    },
-    propImage: {
-        width: '100%',
-        height: 100,
-    },
-    propInfo: {
-        padding: 10,
-    },
     priceText: {
         color: '#0672ff',
         marginTop: 5,
         fontFamily: FONTS.Bold,
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderRadius: 30,
-        paddingHorizontal: 18,
-        paddingVertical: 4,
-        marginTop: 5,
-    },
-    input: {
-        flex: 1,
-        fontSize: RFValue(11),
-        fontFamily: FONTS.Regular,
-        height: 55,
-    },
-    sendBtn: {
-        marginLeft: 10,
     },
 });
 

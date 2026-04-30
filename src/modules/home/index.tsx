@@ -4,12 +4,13 @@ import { useAppDispatch, useAppSelector } from '../../store/reduxHook'
 import { getHomeContent } from './api/action'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated'
-import Animated from 'react-native-reanimated'
-import { screenHeight } from '@utils/Constants'
+import LinearGradient from 'react-native-linear-gradient'
+import { screenHeight, Colors } from '@utils/Constants'
 import MenuHeader from './molecules/MenuHeader'
 
 import Categories from './organisms/Categories'
 import ProductDashboard from './templets/ProductDashboard'
+
 const Home = () => {
   const scrollYGlobal = useSharedValue(0)
   const [selectedTab, setSelectedTab] = useState(0)
@@ -30,6 +31,10 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
+      <LinearGradient
+        colors={['#ece3f7bf', '#6d24bbff']}
+        style={StyleSheet.absoluteFill}
+      />
       <ProductDashboard
         scrollYGlobal={scrollYGlobal}
         selectedTab={selectedTab}
@@ -43,7 +48,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
   },
 })
 

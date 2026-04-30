@@ -57,10 +57,9 @@ const Cart = () => {
     return (
         <View style={styles.mainContainer}>
             <LinearGradient
-                colors={['#0e1525', '#000000']}
+                colors={['#1a0b2e', '#0f051a']}
                 style={StyleSheet.absoluteFill}
             />
-
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>My Event Cart</Text>
                 <View style={styles.cartBadge}>
@@ -274,17 +273,17 @@ const styles = StyleSheet.create({
     },
     emptyTitle: {
         color: '#fff',
-        fontSize: RFValue(20),
+        fontSize: RFValue(17),
         fontFamily: FONTS.Bold,
         marginBottom: 10,
     },
     emptySubtitle: {
         color: 'rgba(255, 255, 255, 0.5)',
-        fontSize: RFValue(12),
+        fontSize: RFValue(9),
         fontFamily: FONTS.Medium,
         textAlign: 'center',
         lineHeight: 20,
-        marginBottom: 30,
+        marginBottom: 5,
     },
     shopNowBtn: {
         width: '60%',

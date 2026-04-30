@@ -10,6 +10,7 @@ import {
     FlatList,
     Platform,
 } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import LinearGradient from 'react-native-linear-gradient';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -170,56 +171,46 @@ const ExploreScreen: FC = () => {
                     </ScrollView>
                 </View>
 
-                {/* Recommended Section */}
-                <View style={styles.sectionHeader}>
-                    <View>
-                        <View style={styles.aiPickRow}>
-                            <Icon name="shimmer" size={12} color="#00ffff" />
-                            <CustomText style={styles.aiPickText}>SPOTT AI PICK</CustomText>
-                        </View>
-                        <CustomText variant="h5" fontFamily={FONTS.Bold} style={styles.sectionTitle}>Recommended✨</CustomText>
-                    </View>
-                    <TouchableOpacity>
-                        <CustomText style={styles.viewAll}>VIEW ALL</CustomText>
-                    </TouchableOpacity>
-                </View>
-
-                <FlatList
-                    horizontal
-                    data={EXPLORE_DATA.recommended}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingLeft: 20 }}
-                    renderItem={({ item, index }) => (
-                        <View key={item.id} style={styles.recomCard}>
-                            <View style={styles.recomImgContainer}>
-                                <Image source={{ uri: item.image }} style={styles.recomImg} resizeMode="cover" />
-                                <View style={styles.matchBadge}>
-                                    <CustomText style={styles.matchText}>{item.match}</CustomText>
-                                </View>
-                            </View>
-
-                            <View style={styles.cardInfo}>
-                                <CustomText variant="h7" fontFamily={FONTS.Bold} style={styles.cardTitle}>{item.title}</CustomText>
-                                <View style={styles.cardFooter}>
-                                    <IonIcon name="location-outline" size={12} color="#aaa" />
-                                    <CustomText style={styles.cardSubText}>{item.location}</CustomText>
-                                </View>
-
-                                <View style={styles.priceRow}>
-                                    <View style={styles.avatarGroup}>
-                                        <Image source={require('../../assets/avatars/avatar1.png')} style={styles.avatar} />
-                                        <Image source={require('../../assets/avatars/avatar2.png')} style={[styles.avatar, { marginLeft: -12 }, styles.moreAvatar]} />
-                                        <Image source={require('../../assets/avatars/avatar3.png')} style={[styles.avatar, { marginLeft: -12 }, styles.moreAvatar]} />
-                                        <View style={[styles.avatar, styles.moreAvatar]}>
-                                            <CustomText style={{ color: '#fff', fontSize: RFValue(6), fontFamily: FONTS.Bold }}>+1.2k</CustomText>
-                                        </View>
+                <View style={{ height: 340 }}>
+                    <FlashList
+                        data={EXPLORE_DATA.recommended}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingLeft: 20 }}
+                        estimatedItemSize={width * 0.75}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <View style={styles.recomCard}>
+                                <View style={styles.recomImgContainer}>
+                                    <Image source={{ uri: item.image }} style={styles.recomImg} resizeMode="cover" />
+                                    <View style={styles.matchBadge}>
+                                        <CustomText style={styles.matchText}>{item.match}</CustomText>
                                     </View>
-                                    <CustomText fontFamily={FONTS.Bold} style={styles.priceText}>{item.price}</CustomText>
+                                </View>
+
+                                <View style={styles.cardInfo}>
+                                    <CustomText variant="h7" fontFamily={FONTS.Bold} style={styles.cardTitle}>{item.title}</CustomText>
+                                    <View style={styles.cardFooter}>
+                                        <IonIcon name="location-outline" size={12} color="#aaa" />
+                                        <CustomText style={styles.cardSubText}>{item.location}</CustomText>
+                                    </View>
+
+                                    <View style={styles.priceRow}>
+                                        <View style={styles.avatarGroup}>
+                                            <Image source={require('../../assets/avatars/avatar1.png')} style={styles.avatar} />
+                                            <Image source={require('../../assets/avatars/avatar2.png')} style={[styles.avatar, { marginLeft: -12 }, styles.moreAvatar]} />
+                                            <Image source={require('../../assets/avatars/avatar3.png')} style={[styles.avatar, { marginLeft: -12 }, styles.moreAvatar]} />
+                                            <View style={[styles.avatar, styles.moreAvatar]}>
+                                                <CustomText style={{ color: '#fff', fontSize: RFValue(6), fontFamily: FONTS.Bold }}>+1.2k</CustomText>
+                                            </View>
+                                        </View>
+                                        <CustomText fontFamily={FONTS.Bold} style={styles.priceText}>{item.price}</CustomText>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    )}
-                />
+                        )}
+                    />
+                </View>
 
                 {/* Trending Items */}
                 <View style={styles.trendingHeaderContainer}>
@@ -233,19 +224,28 @@ const ExploreScreen: FC = () => {
                     </View>
                 </View>
 
-                {EXPLORE_DATA.trending.map((item, index) => (
-                    <View key={item.id} style={styles.trendingItem}>
-                        <Image source={{ uri: item.image }} style={styles.trendingImg} />
-                        <View style={styles.trendingInfo}>
-                            <CustomText style={styles.trendingCat}>{item.category}</CustomText>
-                            <CustomText variant="h7" fontFamily={FONTS.Bold} style={styles.trendingTitle}>{item.title}</CustomText>
-                            <View style={styles.trendingFooter}>
-                                <CustomText style={styles.trendingSubText}>{item.date}  •  {item.attendance}</CustomText>
-                                <Icon name="chevron-right" size={20} color="#616161" />
+                {/* Use FlashList for vertical items to ensure performance as list grows */}
+                <View style={{ flex: 1, minHeight: 300 }}>
+                    <FlashList
+                        data={EXPLORE_DATA.trending}
+                        estimatedItemSize={110}
+                        keyExtractor={(item) => item.id}
+                        scrollEnabled={false} // Since it is inside a ScrollView
+                        renderItem={({ item }) => (
+                            <View style={styles.trendingItem}>
+                                <Image source={{ uri: item.image }} style={styles.trendingImg} />
+                                <View style={styles.trendingInfo}>
+                                    <CustomText style={styles.trendingCat}>{item.category}</CustomText>
+                                    <CustomText variant="h7" fontFamily={FONTS.Bold} style={styles.trendingTitle}>{item.title}</CustomText>
+                                    <View style={styles.trendingFooter}>
+                                        <CustomText style={styles.trendingSubText}>{item.date}  •  {item.attendance}</CustomText>
+                                        <Icon name="chevron-right" size={20} color="#616161" />
+                                    </View>
+                                </View>
                             </View>
-                        </View>
-                    </View>
-                ))}
+                        )}
+                    />
+                </View>
             </ScrollView>
 
         </View>

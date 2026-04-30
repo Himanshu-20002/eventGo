@@ -10,100 +10,122 @@ export const slipData = ['PREMIUM FINDS', "100% GENUINE BRAND", "FREE SHIPPING",
 export const searchItems: string[] = ['Watches', 'Laptops', 'T-shirts', 'Shoes', 'Bags', 'Headphones', 'Sunglasses']
 
 export const categoriesData = [
-    { id: 1, name: "Events", image_uri: 'https://res.cloudinary.com/da41fzsmk/image/upload/v1763997122/Screenshot_2025-11-24_203352_1_1_pgs5vi.png' },
-    { id: 2, name: "Organizer", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/121/121/image/18a00dd8cb47884d.jpg?q=60' },
-    { id: 3, name: "PropRental", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/121/121/image/18a00dd8cb47884d.jpg?q=60' },
-    { id: 4, name: "Stall", image_uri: 'https://res.cloudinary.com/dniebxelj/image/upload/v1774386044/Gemini_Generated_Image_t4wua4t4wua4t4wu_m3y6xx.png' },
+    { id: 1, name: "Events", image_uri: 'https://res.cloudinary.com/dniebxelj/image/upload/v1776837828/ChatGPT_Image_Apr_22_2026_11_17_01_AM_w3cx3a.png' },
+    { id: 2, name: "Organizer", image_uri: 'https://res.cloudinary.com/dniebxelj/image/upload/v1776837854/ChatGPT_Image_Apr_22_2026_11_32_25_AM_crziee.png' },
+    { id: 3, name: "PropRental", image_uri: 'https://res.cloudinary.com/dniebxelj/image/upload/v1776836670/ChatGPT_Image_Apr_22_2026_11_12_52_AM_eq6zvn.png' },
+    { id: 4, name: "Stall", image_uri: 'https://res.cloudinary.com/dniebxelj/image/upload/v1776836988/ChatGPT_Image_Apr_22_2026_11_16_43_AM_ziuzqs.png' },
 
 
 ]
 
 export const dynamicDashboardData = [
-
     {
         type: "categories",
+        category: "all",
         data: categoriesData,
     },
-    // {
-    //     type: "ad_carousal",
-    //     data: [
-    //         { id: 1, image_uri: require('@assets/images/banner1.png'), path: "/ad1" },
-    //         { id: 2, image_uri: require('@assets/images/banner2.png'), path: "/ad2" },
-    //         { id: 3, image_uri: require('@assets/images/banner3.png'), path: "/ad2" },
-    //         { id: 4, image_uri: require('@assets/images/banner5.png'), path: "/ad2" },
-    //     ],
-    // },
-
     {
-        type: "sponser",
-        data: [{
-            id: 2,
-            image_uri: "https://res.cloudinary.com/da41fzsmk/image/upload/v1763993992/comingSoon_wibtjk.png",
-            path: '/sponser1'
-        }]
+        type: "ad_carousal",
+        category: "all",
+        data: [
+            { id: 1, image_uri: require('@assets/images/banner1.png'), path: "/ad1" },
+            { id: 2, image_uri: require('@assets/images/banner2.png'), path: "/ad2" },
+            { id: 3, image_uri: require('@assets/images/banner3.png'), path: "/ad2" },
+        ],
     },
-
+    // EVENTS CATEGORY
     {
         type: "horizontal_list",
-        title: "Organizers",
+        category: "Events",
+        title: "🔴 Happening Now: LIVE",
         data: [
-            { id: 1, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/4d790d95eab9b756.jpg?q=20' },
-            { id: 2, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/d269de10795cd29e.jpg?q=20' },
-            { id: 3, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/4ce286f7b3ddd5db.jpg?q=20' },
-            { id: 4, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/7723bd9e53937442.jpg?q=20' },
-            { id: 5, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/e6a8222e73b47590.jpg?q=20' },
+            { id: 1, path: "", image_uri: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600', isLive: true },
+            { id: 2, path: "", image_uri: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=600', isLive: true },
+            { id: 3, path: "", image_uri: 'https://images.unsplash.com/photo-1459749411177-042180ceea72?q=80&w=600', isLive: true },
         ]
     },
     {
         type: "vertical_list",
-        title: "BEST OF BRAND OFFERS",
-        bgColor: '#CDDEDA',
-        btnColor: "#2F4D4B",
+        category: "Events",
+        title: "Most Anticipated Concerts",
+        bgColor: '#1a0b2e',
+        btnColor: "#FFC201",
         data: [
-            { id: 1, path: "", image_uri: 'https://rukminim2.flixcart.com/image/536/644/xif0q/t-shirt/m/9/u/l-tsrt-catalog-14-kajaru-original-imah4qtagcpkxxzs.jpeg?q=60&crop=false', title: "T-shirts", subTitle: "Upto 50% off" },
-            { id: 3, path: "", image_uri: 'https://rukminim2.flixcart.com/image/536/644/xif0q/jean/q/z/g/32-t-baggy-light-blue-tidda-original-imah3ztwwzsvtfax.jpeg?q=60&crop=false', title: "Jeans", subTitle: "Upto 40% off" },
-            { id: 4, path: "", image_uri: 'https://rukminim2.flixcart.com/image/536/644/xif0q/jacket/i/l/p/xl-1-no-heavy-upar-0-futse-peno-original-imah6hzhet6zpyaa.jpeg?q=60&crop=false', title: "Jackets", subTitle: "Upto 60% off" },
-            { id: 5, path: "", image_uri: 'https://rukminim2.flixcart.com/image/536/644/xif0q/kurta/x/f/y/l-kurta1513-bellstone-original-imah7nywnygwdqhv.jpeg?q=60&crop=false', title: "Kurtas", subTitle: "Upto 50% off" },
+            { id: 10, path: "", image_uri: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=400', title: "Summer Beats 2026", subTitle: "Early Bird Open" },
+            { id: 11, path: "", image_uri: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=400', title: "Electronic Sky", subTitle: "Selling Fast" },
         ]
     },
+    // ORGANIZER CATEGORY
     {
-        type: "sponser",
-        data: [{
-            id: 3,
-            image_uri: "https://res.cloudinary.com/da41fzsmk/image/upload/v1763995096/White_And_Black_Gradient_Coming_Soon_Email_Header_cxevsz.png",
-            path: '/sponser2'
-        }]
-    },
-    {
-        type: "animated_horizontal_list",
-        title: "TOP PICKS GEN-Z",
+        type: "horizontal_list",
+        category: "Organizer",
+        title: "Elite Wedding Planners",
         data: [
-            { id: 1, path: "", image_uri: 'https://rukminim2.flixcart.com/image/536/644/xif0q/shirt/k/2/n/xxl-box01-jackbella-original-imah4hhhse4gzghk.jpeg?q=60&crop=false' },
-            { id: 3, path: "", image_uri: 'https://rukminim2.flixcart.com/image/536/644/xif0q/shirt/e/i/h/xxl-men-regular-slim-fit-solid-button-down-collar-formal-shirt-original-imaggvvnywmgthyq.jpeg?q=60&crop=false' },
-            { id: 4, path: "", image_uri: 'https://rukminim2.flixcart.com/image/536/644/xif0q/shirt/w/0/a/s-0721-sh95-08-the-indian-garage-co-original-imagmhjgdyr4zeaq.jpeg?q=60&crop=false' },
-            { id: 5, path: "", image_uri: 'https://rukminim2.flixcart.com/image/536/644/xif0q/trouser/r/k/5/30-phtr000026-highlander-original-imagua3nckfuzzgw.jpeg?q=60&crop=false' },
+            { id: 20, path: "", image_uri: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=600' },
+            { id: 21, path: "", image_uri: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=600' },
         ]
     },
-    // {
-    //     type: "horizontal_list",
-    //     title: "Featured on Kart",
-    //     data: [
-    //         { id: 1, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/a346fdef9457ab5e.jpg?q=20' },
-    //         { id: 2, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/1bd8d123afe6cd26.jpg?q=20' },
-    //         { id: 3, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/725a60752b6ac21d.jpg?q=20' },
-    //         { id: 4, path: "", image_uri: 'https://rukminim2.flixcart.com/fk-p-flap/480/720/image/2b990fef244e3d2f.jpg?q=20' },
-    //     ]
-    // },
     {
         type: "vertical_list",
-        title: "BEST OF BRAND OFFERS",
-        bgColor: "#DCD2A2",
-        btnColor: "#5C5037",
+        category: "Organizer",
+        title: "Corporate Event Experts",
+        bgColor: '#1a0b2e',
+        btnColor: "#8941e7",
         data: [
-            { id: 1, path: "", image_uri: 'https://m.media-amazon.com/images/I/71tGtBuo0yL._AC_UY436_FMwebp_QL65_.jpg', title: "Wireless Mouse", subTitle: "Top Picks" },
-            { id: 3, path: "", image_uri: 'https://m.media-amazon.com/images/I/81CwAlYjJ4L.__AC_SX300_SY300_QL70_FMwebp_.jpg', title: "Sofa", subTitle: "Wildest Range" },
-            { id: 4, path: "", image_uri: 'https://m.media-amazon.com/images/I/71EWAUphg2L._AC_UY436_FMwebp_QL65_.jpg', title: "Laptop", subTitle: "In Focus Now" },
-            { id: 5, path: "", image_uri: 'https://media.istockphoto.com/id/1408099652/photo/xbox.jpg?s=612x612&w=0&k=20&c=U35tDYndjlTUebitLvkqE1_xbzCihjRhlGaE9mmD7ck=', title: "Gaming Console", subTitle: "Genuine" },
+            { id: 22, path: "", image_uri: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=400', title: "Nexus Tech Sumit", subTitle: "B2B Specialist" },
+            { id: 23, path: "", image_uri: 'https://images.unsplash.com/photo-1475721027187-40227459a6fe?q=80&w=400', title: "Global Gala Hub", subTitle: "Luxury Branding" },
+        ]
+    },
+    // PROP RENTAL CATEGORY
+    {
+        type: "product_list",
+        category: "PropRental",
+        title: "Rent Premium Props",
+        data: [
+            { id: 'p1', title: "Neon Butterfly Sign", price: "$25/day", availability: "In Stock", image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=400' },
+            { id: 'p2', title: "Vintage Edison Tree", price: "$120/day", availability: "2 Left", image: 'https://images.unsplash.com/photo-1540932239986-30128078f3c7?q=80&w=400' },
+            { id: 'p3', title: "Cyberpunk Smoke Machine", price: "$55/day", availability: "In Stock", image: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400' },
+        ]
+    },
+    {
+        type: "vertical_list",
+        category: "PropRental",
+        title: "Stage & Lighting setup",
+        bgColor: '#1a0b2e',
+        btnColor: "#FFC201",
+        data: [
+            { id: 32, path: "", image_uri: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=400', title: "Pro Audio Stack", subTitle: "Crystal Clear" },
+            { id: 33, path: "", image_uri: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400', title: "Intelligent Moving Heads", subTitle: "DMX Ready" },
+        ]
+    },
+    {
+        type: "product_list",
+        category: "PropRental",
+        title: "Prop Specialty Collection",
+        data: [
+            { id: 'ps1', title: "Live Acoustic Set", price: "$120/day", availability: "In Stock", image: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=400' },
+            { id: 'ps2', title: "Vintage Cinema Kit", price: "$85/day", availability: "Limited", image: 'https://images.unsplash.com/photo-1461344577544-4e5dc9487184?q=80&w=400' },
+        ]
+    },
+    // STALL CATEGORY
+    {
+        type: "horizontal_list",
+        category: "Stall",
+        title: "Popular Food Truck Zones",
+        data: [
+            { id: 40, path: "", image_uri: 'https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?q=80&w=600' },
+            { id: 41, path: "", image_uri: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?q=80&w=600' },
+        ]
+    },
+    {
+        type: "vertical_list",
+        category: "Stall",
+        title: "Expo Stall Fabricators",
+        bgColor: '#1a0b2e',
+        btnColor: "#D2B48C",
+        data: [
+            { id: 42, path: "", image_uri: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=400', title: "Modular Booth Pro", subTitle: "Eco-Friendly" },
+            { id: 43, path: "", image_uri: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=400', title: "Tech Exhibit Pods", subTitle: "Interactive AR" },
         ]
     },
 ]
@@ -111,83 +133,35 @@ export const dynamicDashboardData = [
 export const productData = [
     {
         "id": 1,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Google Pixel 4",
-        "desc": "The Google phone with MotionSense, an evolved camera, and the new Google Assistant.",
-        "price": 799,
+        "image_uri": "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=400",
+        "name": "Live Acoustic Set",
+        "desc": "Premium hand-crafted acoustic guitar for unplugged sessions.",
+        "price": 120,
         "ar_uri": null
     },
     {
         "id": 2,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Apple MacBook Pro",
-        "desc": "16-inch MacBook Pro with Touch Bar, 16GB RAM, and 512GB SSD storage.",
-        "price": 2399,
-        "ar_uri": "https://example.com/ar/apple_macbook_pro"
+        "image_uri": "https://images.unsplash.com/photo-1461344577544-4e5dc9487184?q=80&w=400",
+        "name": "Vintage Cinema Projector",
+        "desc": "1940s style functional film projector for retro screenings.",
+        "price": 85,
+        "ar_uri": null
     },
     {
         "id": 3,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Sony WH-1000XM4",
-        "desc": "Industry-leading noise-canceling over-ear headphones with up to 30 hours of battery life.",
-        "price": 349,
+        "image_uri": "https://images.unsplash.com/photo-1540932239986-30128078f3c7?q=80&w=400",
+        "name": "Modular Edison Chandelier",
+        "desc": "Industrial cage lighting with dimmable warm filaments.",
+        "price": 45,
         "ar_uri": null
     },
     {
         "id": 4,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Nike Air Max 270",
-        "desc": "Breathable mesh sneakers with a large Air unit for all-day comfort.",
-        "price": 150,
-        "ar_uri": "https://example.com/ar/nike_air_max_270"
-    },
-    {
-        "id": 5,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Samsung Galaxy Watch",
-        "desc": "Smartwatch with fitness tracking, GPS, and long-lasting battery life.",
-        "price": 299,
+        "image_uri": "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400",
+        "name": "Haze & Fog Machine",
+        "desc": "High-output smoke machine for dramatic volumetric lighting.",
+        "price": 30,
         "ar_uri": null
-    },
-    {
-        "id": 6,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Dyson V11 Vacuum Cleaner",
-        "desc": "Cordless vacuum cleaner with powerful suction and intelligent cleaning modes.",
-        "price": 599,
-        "ar_uri": "https://example.com/ar/dyson_v11_vacuum"
-    },
-    {
-        "id": 7,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Fitbit Charge 4",
-        "desc": "Advanced fitness tracker with built-in GPS, heart rate monitoring, and sleep tracking.",
-        "price": 149,
-        "ar_uri": null
-    },
-    {
-        "id": 8,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Instant Pot Duo 7-in-1",
-        "desc": "Multi-use programmable pressure cooker with 7 cooking functions.",
-        "price": 89,
-        "ar_uri": "https://example.com/ar/instant_pot_duo"
-    },
-    {
-        "id": 9,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "LEGO Star Wars Millennium Falcon",
-        "desc": "Detailed LEGO model of the Millennium Falcon with 1,351 pieces.",
-        "price": 159,
-        "ar_uri": null
-    },
-    {
-        "id": 10,
-        "image_uri": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/t/g/v/l-126703706-jack-jones-original-imagt4rhgg6ehhct.jpeg?q=70",
-        "name": "Bose SoundLink Revolve",
-        "desc": "Portable Bluetooth speaker with 360-degree sound and water-resistant design.",
-        "price": 199,
-        "ar_uri": "https://example.com/ar/bose_soundlink_revolve"
     }
 ]
 

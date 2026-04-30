@@ -1,9 +1,9 @@
-import { View, Text, FlatList, NativeSyntheticEvent, NativeScrollEvent, RefreshControl, Platform, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, NativeSyntheticEvent, NativeScrollEvent, RefreshControl, Platform, ActivityIndicator, StyleSheet } from 'react-native'
 import React, { useState, useEffect, FC, useRef } from 'react'
 import { dynamicDashboardData as fullData } from '@utils/db'
 import CustomText from '../../../utils/ui/ui'
 import { RFValue } from 'react-native-responsive-fontsize'
-import { FONTS as Fonts } from '@utils/Constants'
+import { FONTS as Fonts, Colors } from '@utils/Constants'
 
 import AdCarousal from '../organisms/AdCarousal'
 import Categories from '../organisms/Categories'
@@ -13,6 +13,7 @@ import HorizontalList from '../organisms/HorizontalList'
 import AnimatedHorizontalList from '../organisms/AnimatedHorizontalList'
 import AIAssistantSection from '../../../components/aiAssistant/AIAssistantSection'
 import Animated, { useAnimatedScrollHandler } from 'react-native-reanimated';
+import LinearGradient from 'react-native-linear-gradient'
 
 const sectionComponents: { [key: string]: React.ComponentType<any> } = {
   ad_carousal: AdCarousal,
@@ -24,14 +25,24 @@ const sectionComponents: { [key: string]: React.ComponentType<any> } = {
 
 const PAGE_SIZE = 4
 
-const renderItem = ({ item }: { item: any }) => {
-  const SectionComponent = sectionComponents[item.type]
-  return SectionComponent ? <SectionComponent data={item} /> : null
-}
 
 const keyExtractor = (item: any, index: number) => item.id || index.toString()
 
 const MainList: FC<{ scrollYGlobal: any }> = ({ scrollYGlobal }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  const renderItem = ({ item }: { item: any }) => {
+    const SectionComponent = sectionComponents[item.type]
+    if (!SectionComponent) return null
+
+    return (
+      <SectionComponent
+        data={item}
+        onSelect={(category: string) => setSelectedCategory(category)}
+        selectedCategory={selectedCategory}
+      />
+    )
+  }
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [data, setData] = useState(fullData.slice(0, PAGE_SIZE))
   const [currentPage, setCurrentPage] = useState(1)
@@ -69,9 +80,11 @@ const MainList: FC<{ scrollYGlobal: any }> = ({ scrollYGlobal }) => {
 
   return (
     <View style={{ flex: 1 }}>
+
       <Animated.FlatList
         data={data}
         renderItem={renderItem}
+        extraData={selectedCategory}
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
         onScroll={scrollHandler}
         ref={flatlistRef as any}
@@ -85,16 +98,16 @@ const MainList: FC<{ scrollYGlobal: any }> = ({ scrollYGlobal }) => {
         ListFooterComponent={
           <>
             {isLoadingMore && <ActivityIndicator style={{ alignSelf: 'center', margin: 15 }} size="small" color="#0000ff" />}
-            <View style={{ backgroundColor: '#F8F8F8', padding: 20 }}>
+            <View style={{ padding: 20, backgroundColor: 'transparent' }}>
               <CustomText
                 fontSize={RFValue(32)}
                 fontFamily={Fonts.Bold}
-                style={{ opacity: 0.2 }}>
+                style={{ opacity: 0.7, color: '#fff' }}>
                 eventGo
               </CustomText>
               <CustomText
                 fontFamily={Fonts.Bold}
-                style={{ marginTop: 10, paddingBottom: 80, opacity: 0.2 }}>
+                style={{ marginTop: 10, paddingBottom: 80, opacity: 0.7, color: '#fff' }}>
                 Developed with ❤️
               </CustomText>
             </View>

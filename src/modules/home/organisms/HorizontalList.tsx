@@ -1,6 +1,6 @@
 import { View, StyleSheet, Pressable, Image, FlatList } from 'react-native'
 import React, { FC } from 'react'
-import { FONTS, screenWidth } from '@utils/Constants'
+import { FONTS, Colors, screenWidth } from '@utils/Constants'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { navigate } from '@navigation/NavigationUtil'
 import CustomText from '../../../utils/ui/ui'
@@ -16,7 +16,15 @@ const HorizontalList: FC<{ data: any }> = ({ data }) => {
         style={{ paddingHorizontal: 15 }}
         renderItem={({ item }) => (
           <Pressable style={styles.itemContainer} onPress={() => navigate('Categories')}>
-            <Image source={{ uri: item.image_uri }} style={styles.img} />
+            <View>
+              <Image source={{ uri: item.image_uri }} style={styles.img} />
+              {item.isLive && (
+                <View style={styles.liveBadge}>
+                  <View style={styles.liveDot} />
+                  <CustomText variant="h9" fontFamily={FONTS.Bold} style={{ color: '#fff' }}>LIVE</CustomText>
+                </View>
+              )}
+            </View>
             <CustomText variant="h8" style={styles.productText}>{item.title}</CustomText>
           </Pressable>
         )}
@@ -28,7 +36,6 @@ const HorizontalList: FC<{ data: any }> = ({ data }) => {
 }
 
 const styles = StyleSheet.create({
-  // ... existing styles kept but cleaned
   contentContainer: {
     paddingBottom: 10,
     paddingTop: 10
@@ -37,17 +44,34 @@ const styles = StyleSheet.create({
     paddingBottom: 15
   },
   img: {
-    width: screenWidth * 0.42,
-    height: screenWidth * 0.55,
-    marginRight: 12,
-    borderRadius: 20,
-    backgroundColor: '#eee',
+    width: screenWidth * 0.45,
+    height: 180,
+    borderRadius: 15,
+    resizeMode: 'cover',
+  },
+  liveBadge: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    backgroundColor: '#ff0000',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#fff',
   },
   textStyle: {
     fontSize: RFValue(14),
     paddingHorizontal: 20,
     paddingVertical: 10,
-    color: "#2D2D2D",
+    color: Colors.text || "#2D2D2D",
   },
   itemContainer: {
     marginRight: 10,
@@ -55,7 +79,8 @@ const styles = StyleSheet.create({
   },
   productText: {
     marginTop: 8,
-    color: '#333',
+    color: Colors.text || '#333',
+    fontFamily: FONTS.Medium,
   }
 })
 

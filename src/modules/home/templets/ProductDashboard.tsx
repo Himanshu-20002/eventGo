@@ -35,6 +35,8 @@ import AdCarousal from '../organisms/AdCarousal'
 import Categories from '../organisms/Categories'
 import Sponser from '../organisms/Sponser'
 import HorizontalList from '../organisms/HorizontalList'
+import ProductList from '../organisms/ProductList'
+import VerticalList from '../organisms/VerticalList'
 import AIAssistantSection from '../../../components/aiAssistant/AIAssistantSection'
 
 const sectionComponents: { [key: string]: React.ComponentType<any> } = {
@@ -42,6 +44,8 @@ const sectionComponents: { [key: string]: React.ComponentType<any> } = {
   categories: Categories,
   sponser: Sponser,
   horizontal_list: HorizontalList,
+  vertical_list: VerticalList,
+  product_list: ProductList,
   "ai_assistant": AIAssistantSection
 }
 
@@ -54,16 +58,24 @@ const ProductDashboard = ({ scrollYGlobal, selectedTab, setSelectedTab, onSearch
   const previousScrollY = useSharedValue(0)
 
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [data, setData] = useState(fullData.slice(0, 6))
   const [currentPage, setCurrentPage] = useState(1)
   const PAGE_SIZE = 6
 
   // Dynamic Header State
-  const [headerTitle, setHeaderTitle] = useState('Event Collection')
+  const [headerTitle, setHeaderTitle] = useState('Events Collection')
   const [headerTheme, setHeaderTheme] = useState<'light' | 'dark'>('light')
+  const [selectedCategory, setSelectedCategory] = useState<string>('Events')
+
+  // Optimized Filtering Logic
+  const filteredData = useMemo(() => {
+    return fullData.filter(item => 
+      item.category === 'all' || item.category === selectedCategory
+    )
+  }, [selectedCategory])
 
   const handleCategorySelect = useCallback((categoryName: string) => {
     setHeaderTitle(`${categoryName} Collection`)
+    setSelectedCategory(categoryName)
     // Switch theme based on category for visual dynamics
     if (categoryName === 'Organizer' || categoryName === 'Stall') {
       setHeaderTheme('dark')
@@ -75,27 +87,23 @@ const ProductDashboard = ({ scrollYGlobal, selectedTab, setSelectedTab, onSearch
   const renderItem = useCallback(({ item }: { item: any }) => {
     const SectionComponent = sectionComponents[item.type]
     if (item.type === 'categories') {
-      return <SectionComponent data={item} onSelect={handleCategorySelect} />
+      return (
+        <SectionComponent 
+          data={item} 
+          onSelect={handleCategorySelect} 
+          selectedCategory={selectedCategory} 
+        />
+      )
     }
     return SectionComponent ? <SectionComponent data={item} /> : null
-  }, [handleCategorySelect]);
+  }, [handleCategorySelect, selectedCategory]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setIsRefreshing(true)
     setTimeout(() => {
-      setCurrentPage(1)
-      setData(fullData.slice(0, PAGE_SIZE))
       setIsRefreshing(false)
     }, 1000)
-  }
-
-  const handleLoadMore = () => {
-    if (data?.length >= fullData.length) return;
-    const newPage = currentPage + 1
-    const newItems = fullData.slice(0, newPage * PAGE_SIZE)
-    setData(newItems)
-    setCurrentPage(newPage)
-  }
+  }, [])
 
   const backtoTopStyle = useAnimatedStyle(() => {
     const isScrollingUp = scrollY.value < previousScrollY.value && scrollY.value > 180
@@ -133,20 +141,30 @@ const ProductDashboard = ({ scrollYGlobal, selectedTab, setSelectedTab, onSearch
 
         {selectedTab === 0 ? (
           <CollapsibleFlatList
-            data={data}
+            data={filteredData}
             renderItem={renderItem}
+            extraData={selectedCategory}
             keyExtractor={keyExtractor}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.5}
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
             nestedScrollEnabled
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 100 }}
-            initialNumToRender={5}
-            maxToRenderPerBatch={5}
-            windowSize={10}
-            removeClippedSubviews={Platform.OS === 'android'}
+            ListFooterComponent={
+              <View style={{ padding: 20, backgroundColor: 'transparent' }}>
+                <CustomText
+                  fontSize={RFValue(32)}
+                  fontFamily={Fonts.SemiBold}
+                  style={{ opacity: 0.7, color: '#fff' }}>
+                  eventGo
+                </CustomText>
+                <CustomText
+                  fontFamily={Fonts.SemiBold}
+                  style={{ marginTop: 10, paddingBottom: 80, opacity: 0.7, color: '#fff' }}>
+                  Developed with ❤️
+                </CustomText>
+              </View>
+            }
           />
         ) : (
           <CollapsibleScrollView
@@ -166,7 +184,7 @@ const ProductDashboard = ({ scrollYGlobal, selectedTab, setSelectedTab, onSearch
 const styles = StyleSheet.create({
   panelContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: 'transparent'
   },
   transparent: {
     backgroundColor: 'transparent',

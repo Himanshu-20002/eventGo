@@ -14,7 +14,7 @@ const Ticket: FC = () => {
                 colors={['#1a0b2e', '#0f051a']}
                 style={StyleSheet.absoluteFill}
             />
-            
+
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
                     <CustomText variant="h3" fontFamily={FONTS.Bold} style={styles.title}>My Tickets</CustomText>
@@ -30,7 +30,7 @@ const Ticket: FC = () => {
                         </View>
                         <IonIcon name="qr-code-outline" size={40} color="#00ffff" />
                     </View>
-                    
+
                     <View style={styles.divider}>
                         <View style={styles.dotLeft} />
                         <View style={styles.line} />

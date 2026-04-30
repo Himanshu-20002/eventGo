@@ -26,8 +26,8 @@ export const getPropsFromFirebase = async (): Promise<PropItem[]> => {
                 available: typeof data.available === 'boolean' ? data.available : true,
                 stock: data.stock !== undefined ? Number(data.stock) : 10,
                 
-                // Provide a placeholder image since it wasn't specified in the database upload
-                image: data.image || 'https://images.unsplash.com/photo-1542360551-0373ab1ee452?q=80&w=300',
+                // Provide a high-quality event-related placeholder image
+                image: data.image || 'https://images.unsplash.com/photo-1478147427282-58a87a120781?q=80&w=500',
                 vendorName: data.vendorName || 'eventoGo Provider',
             } as PropItem;
         });

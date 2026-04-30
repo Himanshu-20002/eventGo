@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback } from 'react';
 import {
     View,
     StyleSheet,
@@ -6,21 +6,20 @@ import {
     ScrollView,
     Dimensions,
     Image,
-    TextInput,
     Platform,
     FlatList,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useDispatch, useSelector } from 'react-redux';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import CustomText from '../../../utils/ui/ui';
 import { FONTS } from '../../../utils/Constants';
-import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { RootState } from '../../../store/store';
 import { submitAIQuery } from '../../../store/aiAssistant/slice';
 import AIAssistantSection from '../../../components/aiAssistant/AIAssistantSection';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -57,6 +56,8 @@ const SUGGESTED_DATA = [
     }
 ];
 
+
+
 const VENDORS_DATA = [
     { id: 'v1', name: "SONIC WAVES", rating: "4.9", image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=200" },
     { id: 'v2', name: "GOURMET LAB", rating: "4.8", image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=200" },
@@ -66,19 +67,15 @@ const VENDORS_DATA = [
 
 
 const AISearchScreen: FC = () => {
-    const [searchQuery, setSearchQuery] = useState('');
     const dispatch = useDispatch();
-    const { history } = useSelector((state: RootState) => state.aiAssistant);
+    const { history, recommendedProps } = useSelector((state: RootState) => state.aiAssistant);
 
-    const handleAISearch = useCallback(() => {
-        if (searchQuery.trim()) {
-            dispatch(submitAIQuery(searchQuery));
-        }
-    }, [searchQuery, dispatch]);
+    const row1 = recommendedProps.slice(0, Math.ceil(recommendedProps.length / 2));
+    const row2 = recommendedProps.slice(Math.ceil(recommendedProps.length / 2));
 
     const renderSuggestedItem = useCallback(({ item, index }: any) => (
         <Animated.View
-            entering={FadeInRight.delay(600 + index * 100)}
+
             style={[
                 styles.suggestedCard,
                 {
@@ -105,168 +102,185 @@ const AISearchScreen: FC = () => {
     return (
         <View style={styles.container}>
             <LinearGradient
-                colors={['#0e1525', '#000000']}
+                colors={['#1a0b2e', '#0f051a']}
                 style={StyleSheet.absoluteFill}
             />
 
+            {/* Header */}
+            <View style={styles.header}>
+                <View style={styles.headerLeft}>
+                    <CustomText variant="h4" fontFamily={FONTS.Bold} style={styles.logoText}>
+                        EVENT<CustomText style={{ color: '#00ffffff' }}>GO</CustomText>
+                    </CustomText>
+                </View>
+                <TouchableOpacity style={styles.profileBtn}>
+                    <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} style={styles.profileImg} />
+                </TouchableOpacity>
+            </View>
+
+            {/* Pinned AI Assistant Conversation / Results */}
+            {history.length > 0 ? (
+                <View style={[styles.pinnedChatWrapper, { maxHeight: height * 0.32 }]}>
+
+
+                    {/* Top Fade Overlay */}
+                    <LinearGradient
+                        colors={['#1a0b2e', 'transparent']}
+                        style={styles.topFade}
+                        pointerEvents="none"
+                    />
+                    <AIAssistantSection isDark={true} />
+                    {/* Bottom Fade Overlay */}
+                    <LinearGradient
+                        colors={['transparent', 'rgba(0, 255, 255, 0.05)', 'rgba(0, 255, 255, 0.15)']}
+                        style={styles.bottomFade}
+                        pointerEvents="none"
+                    />
+                </View>
+            ) : (
+                /* Title */
+                <View style={styles.titleSection}>
+                    <CustomText variant="h2" fontFamily={FONTS.Bold} style={styles.mainTitle}>Plan with</CustomText>
+                    <CustomText variant="h2" fontFamily={FONTS.Bold} style={styles.gradientTitle}>Intelligence</CustomText>
+                </View>
+            )}
+
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                {/* Header */}
-                <View style={styles.header}>
-                    <View style={styles.headerLeft}>
-                        {/* <Icon name="menu" size={28} color="#fff" /> */}
-                        <CustomText variant="h4" fontFamily={FONTS.Bold} style={styles.logoText}>
-                            EVENT<CustomText style={{ color: '#ff00ff' }}>O</CustomText>
-                        </CustomText>
+                {/* Quick Starters */}
+                <View style={styles.sectionHeader}>
+                    <View style={styles.dashLine} />
+                    <CustomText style={styles.sectionSubtitle}>QUICK STARTERS</CustomText>
+                </View>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.starterScroll}>
+                    {QUICK_STARTERS.map((item, i) => (
+                        <TouchableOpacity key={i} style={styles.starterPill} onPress={() => {
+                            dispatch(submitAIQuery(item));
+                        }}>
+                            <CustomText style={styles.starterText}>{item}</CustomText>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+                {/* Filter Icons */}
+                <View style={styles.filterBar}>
+                    <FilterIcon name="wallet-outline" label="BUDGET" color="#ff00ff" />
+                    <FilterIcon name="location-outline" label="LOCATION" color="#ff00ff" />
+                    <FilterIcon name="business-outline" label="SPACE" color="#00ffff" />
+                    <FilterIcon name="color-palette-outline" label="THEME" color="#ff00ff" />
+                    <FilterIcon name="options-outline" label="MORE" color="#666" />
+                </View>
+                {/* AI Curated Selections (from Assistant) */}
+                {recommendedProps.length > 0 && (
+                    <View style={styles.recomBlock}>
+                        <View style={styles.sectionHeader}>
+                            <View style={styles.dashLine} />
+                            <CustomText style={styles.sectionSubtitle}>CURATED SELECTIONS</CustomText>
+                        </View>
+
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recomRow}>
+                            {row1.map((item: any, index: number) => (
+                                <View key={item.id || index} style={styles.propCard}>
+                                    <Image 
+                                        source={{ uri: item.image }} 
+                                        style={styles.propImage} 
+                                        resizeMode="cover"
+                                    />
+                                    <View style={styles.propInfo}>
+                                        <CustomText variant="h9" fontFamily={FONTS.Bold} numberOfLines={1} style={styles.propName}>
+                                            {item.name}
+                                        </CustomText>
+                                        <CustomText variant="h9" style={styles.priceText}>
+                                            ₹{item.price.toLocaleString()}
+                                        </CustomText>
+                                    </View>
+                                </View>
+                            ))}
+                        </ScrollView>
+
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recomRow}>
+                            {row2.map((item: any, index: number) => (
+                                <View key={item.id || index} style={styles.propCard}>
+                                    <Image 
+                                        source={{ uri: item.image }} 
+                                        style={styles.propImage} 
+                                        resizeMode="cover"
+                                    />
+                                    <View style={styles.propInfo}>
+                                        <CustomText variant="h9" fontFamily={FONTS.Bold} numberOfLines={1} style={styles.propName}>
+                                            {item.name}
+                                        </CustomText>
+                                        <CustomText variant="h9" style={styles.priceText}>
+                                            ₹{item.price.toLocaleString()}
+                                        </CustomText>
+                                    </View>
+                                </View>
+                            ))}
+                        </ScrollView>
                     </View>
-                    <TouchableOpacity style={styles.profileBtn}>
-                        <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} style={styles.profileImg} />
+                )}
+
+                {/* AI Suggested */}
+                <View style={styles.suggestedHeader}>
+                    <View>
+                        <View style={styles.aiPickRow}>
+                            <CustomText variant="h5" fontFamily={FONTS.Bold} style={styles.sectionTitle}>AI Suggested</CustomText>
+                            <IonIcon name="sparkles" size={18} color="#ff00ff" />
+                        </View>
+                        <CustomText style={styles.tailoredText}>TAILORED TO YOUR PREFERENCES</CustomText>
+                    </View>
+                    <TouchableOpacity>
+                        <CustomText style={styles.viewAll}>VIEW ALL</CustomText>
                     </TouchableOpacity>
                 </View>
 
-                {/* Title */}
-                <Animated.View entering={FadeInDown.delay(200)} style={styles.titleSection}>
-                    <CustomText variant="h2" fontFamily={FONTS.Bold} style={styles.mainTitle}>Plan with</CustomText>
+                <FlatList
+                    horizontal
+                    data={SUGGESTED_DATA}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingLeft: 20, paddingBottom: 40 }}
+                    snapToInterval={(width * 0.45 + 20) * 2}
+                    decelerationRate="fast"
+                    disableIntervalMomentum={true}
+                    initialNumToRender={2}
+                    maxToRenderPerBatch={2}
+                    windowSize={3}
+                    renderItem={renderSuggestedItem}
+                    keyExtractor={(item) => item.id}
+                />
 
-                    <CustomText variant="h2" fontFamily={FONTS.Bold} style={styles.gradientTitle}>Intelligence</CustomText>
+                <View style={styles.vibeSection}>
+                    <TouchableOpacity style={styles.vibeCircle}>
+                        <LinearGradient
+                            colors={['rgba(255, 0, 255, 0.2)', 'rgba(0, 255, 255, 0.2)']}
+                            style={styles.vibeInner}
+                        >
+                            <IonIcon name="compass" size={24} color="#ff00ff" />
+                            <CustomText style={styles.vibeText}>DISCOVER MORE VIBES</CustomText>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </View>
 
-                </Animated.View>
 
-                {/* AI Input Card */}
-                <Animated.View entering={FadeInDown.delay(400)} style={styles.searchCard}>
-                    <View style={styles.inputRow}>
-                        <IonIcon name="sparkles" size={15} color="#00ffff" style={styles.sparkleIcon} />
-                        <TextInput
-                            placeholder="Describe your event... e.g., Pastel birthday party under ₹5000"
-                            placeholderTextColor="#888"
-                            style={styles.input}
-                            multiline
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                        />
-                    </View>
 
-                    <View style={styles.searchFooter}>
-                        <View style={styles.footerIcons}>
-                            <TouchableOpacity style={styles.iconBtn}>
-                                <Icon name="microphone" size={22} color="#aaa" />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.iconBtn}>
-                                <IonIcon name="sparkles-outline" size={20} color="#aaa" />
-                            </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity style={styles.actionBtn} onPress={handleAISearch}>
-                            <LinearGradient
-                                colors={['#00e5ff', '#2979ff']}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                                style={styles.gradientBtn}
-                            >
-                                <CustomText fontFamily={FONTS.Bold} style={styles.btnText}>GET AI RECOMMENDATIONS</CustomText>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    </View>
-                </Animated.View>
+                {/* Elite Vendors */}
+                <View style={styles.vendorHeader}>
+                    <View style={styles.vendorDash} />
+                    <CustomText variant="h5" fontFamily={FONTS.Bold} style={styles.sectionTitle}>Elite Vendors</CustomText>
+                </View>
 
-                {/* AI Assistant Conversation / Results */}
-                {history.length > 0 && (
-                    <Animated.View entering={FadeInDown}>
-                        <AIAssistantSection isDark={true} />
-                    </Animated.View>
-                )}
-
-                {(
-                    <>
-                        {/* Quick Starters */}
-                        <View style={styles.sectionHeader}>
-                            <View style={styles.dashLine} />
-                            <CustomText style={styles.sectionSubtitle}>QUICK STARTERS</CustomText>
-                        </View>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.starterScroll}>
-                            {QUICK_STARTERS.map((item, i) => (
-                                <TouchableOpacity key={i} style={styles.starterPill} onPress={() => {
-                                    setSearchQuery(item);
-                                    dispatch(submitAIQuery(item));
-                                }}>
-                                    <CustomText style={styles.starterText}>{item}</CustomText>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-
-                        {/* AI Suggested */}
-                        <View style={styles.suggestedHeader}>
-                            <View>
-                                <View style={styles.aiPickRow}>
-                                    <CustomText variant="h5" fontFamily={FONTS.Bold} style={styles.sectionTitle}>AI Suggested</CustomText>
-                                    <IonIcon name="sparkles" size={18} color="#ff00ff" />
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.vendorScroll}>
+                    {VENDORS_DATA.map((v, i) => (
+                        <View key={v.id} style={styles.vendorItem}>
+                            <View style={styles.vendorImgWrapper}>
+                                <Image source={{ uri: v.image }} style={styles.vendorImg} />
+                                <View style={[styles.ratingBadge, { backgroundColor: i === 0 ? '#00ffff' : '#ff00ff' }]}>
+                                    <CustomText style={styles.ratingText}>{v.rating}</CustomText>
                                 </View>
-                                <CustomText style={styles.tailoredText}>TAILORED TO YOUR PREFERENCES</CustomText>
                             </View>
-                            <TouchableOpacity>
-                                <CustomText style={styles.viewAll}>VIEW ALL</CustomText>
-                            </TouchableOpacity>
+                            <CustomText style={styles.vendorName}>{v.name}</CustomText>
                         </View>
-
-                        <FlatList
-                            horizontal
-                            data={SUGGESTED_DATA}
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingLeft: 20, paddingBottom: 40 }}
-                            snapToInterval={(width * 0.45 + 20) * 2}
-                            decelerationRate="fast"
-                            disableIntervalMomentum={true}
-                            initialNumToRender={2}
-                            maxToRenderPerBatch={2}
-                            windowSize={3}
-                            renderItem={renderSuggestedItem}
-                            keyExtractor={(item) => item.id}
-                        />
-
-                        <View style={styles.vibeSection}>
-                            <TouchableOpacity style={styles.vibeCircle}>
-                                <LinearGradient
-                                    colors={['rgba(255, 0, 255, 0.2)', 'rgba(0, 255, 255, 0.2)']}
-                                    style={styles.vibeInner}
-                                >
-                                    <IonIcon name="compass" size={24} color="#ff00ff" />
-                                    <CustomText style={styles.vibeText}>DISCOVER MORE VIBES</CustomText>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* Filter Icons */}
-                        <View style={styles.filterBar}>
-                            <FilterIcon name="wallet-outline" label="BUDGET" color="#ff00ff" />
-                            <FilterIcon name="location-outline" label="LOCATION" color="#ff00ff" />
-                            <FilterIcon name="business-outline" label="SPACE" color="#00ffff" />
-                            <FilterIcon name="color-palette-outline" label="THEME" color="#ff00ff" />
-                            <FilterIcon name="options-outline" label="MORE" color="#666" />
-                        </View>
-
-                        {/* Elite Vendors */}
-                        <View style={styles.vendorHeader}>
-                            <View style={styles.vendorDash} />
-                            <CustomText variant="h5" fontFamily={FONTS.Bold} style={styles.sectionTitle}>Elite Vendors</CustomText>
-                        </View>
-
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.vendorScroll}>
-                            {VENDORS_DATA.map((v, i) => (
-                                <View key={v.id} style={styles.vendorItem}>
-                                    <View style={styles.vendorImgWrapper}>
-                                        <Image source={{ uri: v.image }} style={styles.vendorImg} />
-                                        <View style={[styles.ratingBadge, { backgroundColor: i === 0 ? '#00ffff' : '#ff00ff' }]}>
-                                            <CustomText style={styles.ratingText}>{v.rating}</CustomText>
-                                        </View>
-                                    </View>
-                                    <CustomText style={styles.vendorName}>{v.name}</CustomText>
-                                </View>
-                            ))}
-                        </ScrollView>
-                    </>
-                )}
-
+                    ))}
+                </ScrollView>
             </ScrollView>
-
-
         </View>
     );
 };
@@ -286,6 +300,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
     },
     scrollContent: {
+        paddingTop: 20,
         paddingBottom: 150,
     },
     header: {
@@ -333,61 +348,48 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         color: '#fff', // Fallback
     },
-    searchCard: {
-        marginHorizontal: 20,
-        marginTop: 25,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: 24,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        padding: 20,
-    },
-    inputRow: {
+    pinnedHeader: {
         flexDirection: 'row',
-        gap: 12,
-    },
-    sparkleIcon: {
-        marginTop: 5,
-    },
-    input: {
-        flex: 1,
-        color: '#fff',
-        fontSize: RFValue(10.5),
-        fontFamily: FONTS.Medium,
-        textAlignVertical: 'top',
-        top: -13,
-        height: 70,
-    },
-    searchFooter: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 20,
+        paddingHorizontal: 20,
+        marginTop: 25,
+        gap: 6,
     },
-    footerIcons: {
-        flexDirection: 'row',
+    pinnedTitle: {
+        color: '#00ffff',
+        fontSize: 10,
+        fontFamily: FONTS.Bold,
+        letterSpacing: 1.5,
+    },
+    pinnedScroll: {
+        paddingHorizontal: 20,
+        marginTop: 15,
         gap: 15,
     },
-    iconBtn: {
-        padding: 5,
+    pinnedCard: {
+        width: 160,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(0, 255, 255, 0.2)',
+        overflow: 'hidden',
     },
-    actionBtn: {
-        flex: 1,
-        marginLeft: 20,
+    pinnedGradient: {
+        padding: 15,
+        flexDirection: 'column',
+        gap: 10,
     },
-    gradientBtn: {
-        paddingVertical: 12,
-        borderRadius: 20,
-        alignItems: 'center',
-        shadowColor: '#00e5ff',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.5,
-        shadowRadius: 10,
+    pinnedTextContainer: {
+        gap: 4,
     },
-    btnText: {
+    pinnedChatTitle: {
         color: '#fff',
-        fontSize: RFValue(9),
-        letterSpacing: 0.5,
+        fontSize: 12,
+        fontFamily: FONTS.Bold,
+    },
+    pinnedChatDate: {
+        color: '#888',
+        fontSize: 9,
+        fontFamily: FONTS.Medium,
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -632,7 +634,103 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 10,
         elevation: 10,
-    }
+    },
+    recomBlock: {
+        marginTop: 20,
+    },
+    recomRow: {
+        paddingHorizontal: 20,
+        marginTop: 15,
+        gap: 15,
+    },
+    propCard: {
+        width: 150,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        marginRight: 15,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    propImage: {
+        width: '100%',
+        height: 100,
+    },
+    propInfo: {
+        padding: 10,
+    },
+    propName: {
+        color: '#fff',
+    },
+    priceText: {
+        color: '#00ffff',
+        marginTop: 5,
+        fontFamily: FONTS.Bold,
+    },
+    topFade: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 40,
+        zIndex: 10,
+    },
+    bottomFade: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 30,
+        zIndex: -100000,
+    },
+
+    pinnedChatWrapper: {
+        marginHorizontal: 16,
+        marginTop: 20,
+        marginBottom: 10,
+        borderRadius: 20,
+        borderWidth: 1.5,
+        borderColor: 'rgba(0, 255, 255, 0.25)',
+        backgroundColor: 'rgba(15, 5, 25, 0.6)',
+        overflow: 'hidden',
+        shadowColor: '#31d6c302',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 25,
+        elevation: 10,
+    },
+    recomBlock: {
+        marginTop: 20,
+    },
+    recomRow: {
+        paddingHorizontal: 20,
+        marginTop: 15,
+        gap: 15,
+    },
+    propCard: {
+        width: 150,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        marginRight: 15,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    propImage: {
+        width: '100%',
+        height: 120,
+    },
+    propInfo: {
+        padding: 10,
+    },
+    propName: {
+        color: '#fff',
+    },
+    priceText: {
+        color: '#00ffff',
+        marginTop: 5,
+        fontFamily: FONTS.Bold,
+    },
 });
 
 export default AISearchScreen;

@@ -16,11 +16,11 @@ export enum FONTS {
 
 export enum Colors {
   primary = '#FFC201',
-  active = '#1054E8',
+  active = '#000000e1',
   inactive = '#666',
-  lightText = "#222",
-  background = '#fff',
-  text = '#222',
+  lightText = "#eee",
+  background = 'transparent',
+  text = '#fff',
 }
 
 export const formatDate = (dateString: string): string => {
