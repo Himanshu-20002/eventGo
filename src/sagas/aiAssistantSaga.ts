@@ -1,33 +1,71 @@
-import { call, put, takeLatest, delay } from 'redux-saga/effects';
+import { call, put, takeLatest, delay, select } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
     aiQuerySuccess,
     aiQueryFailure,
     submitAIQuery,
     PropItem,
-    ExternalSuggestion
+    ExternalSuggestion,
+    ChatMessage
 } from '../store/aiAssistant/slice';
 
+import { RootState } from '../store/store';
 import { parseQuery, ParsedFilters } from '../utils/aiAssistant/queryParser';
 import { getPropsFromFirebase } from '../services/firebase/propService';
 import { scoreAndFilterProps } from '../utils/aiAssistant/recommendationEngine';
 import { generateAssistantResponse } from '../utils/aiAssistant/responseGenerator';
 import { generateExternalSuggestions } from '../utils/aiAssistant/externalSuggestions';
+import { callOpenRouterAI, OpenRouterAIResult } from '../services/ai/openRouterService';
 
 function* handleAIQuery(action: PayloadAction<string>): any {
     try {
         const rawQuery = action.payload;
 
-        // 1. Parse query
-        const parsedFilters: ParsedFilters = yield call(parseQuery, rawQuery);
-
-        // 2. Fetch mock or actual props from Firebase
+        // 1. Fetch mock or actual props from Firebase
         const allProps: PropItem[] = yield call(getPropsFromFirebase);
 
-        // 3. Compute recommendation scores
+        // 2. Fetch history from Redux store for conversation context
+        const history: ChatMessage[] = yield select((state: RootState) => state.aiAssistant.history);
+
+        try {
+            console.log("Attempting to request recommendations from OpenRouter...");
+            // 3. Call OpenRouter service
+            const aiResult: OpenRouterAIResult = yield call(callOpenRouterAI, rawQuery, history, allProps);
+
+            // 4. Map the recommended IDs back to our inventory PropItems, preserving order
+            const recommendedProps: PropItem[] = [];
+            for (const id of aiResult.recommendedPropIds) {
+                const matchedProp = allProps.find(p => p.id === id);
+                if (matchedProp) {
+                    recommendedProps.push({
+                        ...matchedProp,
+                        matchReason: aiResult.recommendedPropMatchReasons[id] || "Fits your design criteria"
+                    });
+                }
+            }
+
+            // 5. Store final response in Redux
+            yield put(aiQuerySuccess({
+                assistantMessage: aiResult.assistantMessage,
+                recommendedProps,
+                externalSuggestions: aiResult.externalSuggestions,
+                followUpQuestion: aiResult.followUpQuestion,
+            }));
+            
+            console.log("Successfully loaded recommendations from OpenRouter!");
+            return;
+        } catch (apiError: any) {
+            console.warn("OpenRouter API failed. Falling back to local rule-based AI engine.", apiError);
+        }
+
+        // --- FALLBACK LOCAL ENGINE ---
+        // 1. Parse query with regex rules
+        const parsedFilters: ParsedFilters = yield call(parseQuery, rawQuery);
+
+        // 2. Compute recommendation scores locally
         const recommendedProps: PropItem[] = yield call(scoreAndFilterProps, allProps, parsedFilters);
 
-        // 4. Build assistant response & follow up question
+        // 3. Build assistant response & follow up question locally
         const responseData: { assistantMessage: string; followUpQuestion: string | null } = yield call(
             generateAssistantResponse,
             parsedFilters,
@@ -35,14 +73,13 @@ function* handleAIQuery(action: PayloadAction<string>): any {
         );
         const { assistantMessage, followUpQuestion } = responseData;
 
-        // 5. Build external suggestions
+        // 4. Build external suggestions locally
         let externalSuggestions: ExternalSuggestion[] = yield call(generateExternalSuggestions, parsedFilters, rawQuery);
-        // Simulate network delay to make it feel like AI processing
-        yield delay(1500);
+        yield delay(1000); // Simulate local processing delay
 
-        // 6. Store final response in Redux
+        // 5. Store final response in Redux
         yield put(aiQuerySuccess({
-            assistantMessage,
+            assistantMessage: `[Local Assistant] ${assistantMessage}`,
             recommendedProps,
             externalSuggestions,
             followUpQuestion,
@@ -56,3 +93,4 @@ function* handleAIQuery(action: PayloadAction<string>): any {
 export default function* aiAssistantSaga() {
     yield takeLatest(submitAIQuery.type, handleAIQuery);
 }
+

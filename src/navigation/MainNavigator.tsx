@@ -11,7 +11,7 @@ import { HomeIcon, ExploreIcon, CartIcon, AccountIcon, SparkelIcon, TicketIcon }
 import { useAppSelector } from '@store/reduxHook';
 import { select } from 'redux-saga/effects';
 import { selectTotalItemsInCart } from '@modules/cart/api/slice';
-import AISearchScreen from '@modules/home/screens/AISearchScreen';
+import AISearchScreen from '@modules/home/Aiscreens/AISearchScreen';
 
 import CustomTabBar from './CustomTabBar';
 

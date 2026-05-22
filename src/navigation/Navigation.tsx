@@ -7,13 +7,13 @@ import { FC } from 'react';
 import { navigationRef } from './NavigationUtil';
 import MainNavigator from './MainNavigator';
 import ProductList from '../modules/products/index'
-import AISearchScreen from '../modules/home/screens/AISearchScreen';
+import AISearchScreen from '../modules/home/Aiscreens/AISearchScreen';
 
-const Navigation:FC= () => {
+const Navigation: FC = () => {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator screenOptions={{headerShown:false}}>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="Main" component={MainNavigator} />
         <Stack.Screen name="Product" component={ProductList} />

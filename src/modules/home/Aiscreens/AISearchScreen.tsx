@@ -179,9 +179,9 @@ const AISearchScreen: FC = () => {
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recomRow}>
                             {row1.map((item: any, index: number) => (
                                 <View key={item.id || index} style={styles.propCard}>
-                                    <Image 
-                                        source={{ uri: item.image }} 
-                                        style={styles.propImage} 
+                                    <Image
+                                        source={{ uri: item.image }}
+                                        style={styles.propImage}
                                         resizeMode="cover"
                                     />
                                     <View style={styles.propInfo}>
@@ -199,9 +199,9 @@ const AISearchScreen: FC = () => {
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recomRow}>
                             {row2.map((item: any, index: number) => (
                                 <View key={item.id || index} style={styles.propCard}>
-                                    <Image 
-                                        source={{ uri: item.image }} 
-                                        style={styles.propImage} 
+                                    <Image
+                                        source={{ uri: item.image }}
+                                        style={styles.propImage}
                                         resizeMode="cover"
                                     />
                                     <View style={styles.propInfo}>
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
-        marginTop: 40,
+        marginTop: 20,
         gap: 10,
     },
     dashLine: {
